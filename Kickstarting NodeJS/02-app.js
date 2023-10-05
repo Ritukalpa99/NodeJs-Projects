@@ -1,5 +1,5 @@
 const http = require('http');
-const fs = require('fs')
+const fs = require('fs');
 // function rqListener(req, res) {
 
 // }
@@ -13,13 +13,21 @@ const server = http.createServer((req, res) => {
     if (url === '/') {
         res.write('<html>')
         res.write('<head><title>Enter Message</title></head>')
-        res.write('<body><form action="/message method="POST"><input type="text" name="message"><button type="submit">send</button></form></body>')
+        res.write('<body><form action="/message" method="POST"><input type="text" name="message"><button type="submit">send</button></form></body>')
         res.write('</html>')
         return res.end()
     }
-    if (url === '/message' && method === 'POST') {
-
-        fs.writeFileSync('message.txt','dummy');
+    if (url === '/message') {
+        const body = []
+        req.on('data', (chunks) => {
+            body.push(chunks)
+        })
+        req.on('end',() => {
+            const parsedBody = Buffer.concat(body).toString();
+            const message = parsedBody.split('=')[1];
+            fs.writeFileSync('message.txt',message);
+        })
+        
         // res.writeHead(302, {})
         res.statusCode = 302 //redirection
         res.setHeader('Location', '/')
