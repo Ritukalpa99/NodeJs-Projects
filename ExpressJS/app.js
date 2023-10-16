@@ -5,11 +5,11 @@ const app = express();
 app.use(bodyParser.urlencoded({extended : false}));
 
 app.use('/add-product', (req, res, next) => {
-    res.send('<form action="/product" method="POST"><input type="text" name="title"><button type="submit">Add Product</button></form>')
+    res.send('<form action="/product" method="POST"><input type="text" name="title"><input type="text" name="size"><button type="submit">Add Product</button></form>')
 })
 
 app.post('/product', (req, res, next) => {
-    console.log(req.body);
+    console.log(req.body.title, req.body.size);
     res.redirect('/')
 })
 app.use('/', (req, res, next) => {
