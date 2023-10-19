@@ -8,23 +8,23 @@ const app = express();
 app.use(bodyParser.urlencoded({extended : false}))
 
 app.get('/login',(req,res) => {
-    res.send('<form action="/user-details" method="POST"><input type="text" name="name"><button type="submit">Add Product</button></form>')
+    res.send('<form onsubmit="localStorage.setItem(`username`, document.getElementById(`username`).value)" action="/user-details" method="POST"><input id="username" type="text" name="username"><button type="submit">Add Product</button></form>')
 })
 
 app.post('/user-details', (req,res) => {
-    const userName = req.body.name
-    console.log(userName);
-    fs.appendFile('./message.txt', `${userName}\n`, (err) => {
-        // console.log(err);
+    const userName = req.body.username
+    fs.appendFile('./message.txt', `${userName} Logged in\n`, (err) => { 
+        if(err) console.log(err);
     })
-    // localStorage.setItem({'user' : userName})
+    
     res.redirect('/')
 })
 
 app.post('/chat-message', (req,res) => {
     const chat = req.body.message
-    fs.appendFile('./message.txt', `${chat}\n`, (err) => {
-        // console.log(err);
+    const uname = req.body.username
+    fs.appendFile('./message.txt', `${uname}: ${chat}\n`, (err) => {
+        if(err)throw err;
     })
     res.redirect('/')
 })
@@ -32,8 +32,7 @@ app.post('/chat-message', (req,res) => {
 app.get('/', (req,res) => {
     fs.readFile('./message.txt',"utf-8", (err,data) => {
         if(err) throw err;
-        const text = data + '<form action="/chat-message" method="POST"><input type="text" name="message"><button type="submit">send</button></form>'
-        // res.send(data)
+        const text = data + '<form action="/chat-message" onsubmit="document.getElementById(`username`).value = localStorage.getItem(`username`);" method="POST"><input type="text" name="message"><input type="text" name="username" id="username"><button type="submit">send</button></form>'
         res.send(text)
     })
 })
