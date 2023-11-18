@@ -35,8 +35,11 @@ exports.getEditProduct = (req, res, next) => {
 	}
 	const prodId = req.params.productId;
 	// findById() has been replaced with findByPk()
-	Product.findByPk(prodId)
-		.then((product) => {
+	req.user
+		.getProducts({ where: { id: prodId } })
+		// Product.findByPk(prodId)
+		.then((products) => {
+			const product = products[0];
 			if (!product) {
 				return res.redirect("/");
 			}
@@ -73,7 +76,8 @@ exports.postEditProducts = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-	Product.findAll()
+	req.user
+		.getProducts()
 		.then((products) => {
 			res.render("admin/products", {
 				prods: products,
