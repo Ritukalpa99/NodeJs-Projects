@@ -11,8 +11,8 @@ app.use(bodyparser.json());
 app.use(cors());
 
 sequelize
-	.sync()
-	// .sync({force : true})
+	// .sync()
+	.sync({force : true})
 	.then(() => {
 		console.log("DB synched");
 	});
