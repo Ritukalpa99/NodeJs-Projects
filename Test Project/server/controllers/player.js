@@ -29,5 +29,17 @@ exports.getPlayerByName = async (req, res) => {
 };
 
 exports.updatePlayer = async (req, res) => {
-  
+    const { id } = req.params;
+    try {
+      const [updated] = await Player.update(req.body, {
+        where: { id },
+      });
+      if (updated) {
+        const updatedPlayer = await Player.findOne({ where: { id } });
+        return res.json(updatedPlayer);
+      }
+      throw new Error('Player not found');
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
 };

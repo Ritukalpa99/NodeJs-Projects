@@ -10,3 +10,5 @@ router.post('/', playerController.createPlayer);
 router.get('/:name', playerController.getPlayerByName);
 
 router.put('/:id', playerController.updatePlayer);
+
+module.exports = router;

@@ -24,27 +24,29 @@ const Player = sequelize.define("Player", {
         allowNull : false,
     },
     matches : {
-        type : Sequelize.INTEGER,
+        type : Sequelize.STRING,
         allowNull : false,
     },
     score : {
-        type : Sequelize.INTEGER,
+        type : Sequelize.STRING,
         allowNull : false,
     },
     fifties : {
-        type : Sequelize.INTEGER,
+        type : Sequelize.STRING,
         allowNull : false,
     },
     centuries : {
-        type : Sequelize.INTEGER,
+        type : Sequelize.STRING,
         allowNull : false,
     },
     wickets : {
-        type : Sequelize.INTEGER,
+        type : Sequelize.STRING,
         allowNull : false,
     },
     average : {
-        type : Sequelize.INTEGER,
+        type : Sequelize.STRING,
         allowNull : false,
     },
 });
+
+module.exports = Player;
