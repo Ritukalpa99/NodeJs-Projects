@@ -22,9 +22,31 @@ const PlayerForm = () => {
 		});
 	};
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch("http://localhost:3001/players", {
+               methods : 'POST',
+               headers : {
+                'Content-Type' : 'application/json',
+               } ,
+               body : JSON.stringify(formData),
+            });
+
+            if(response.ok) {
+                console.log("Player created successfully");
+            } else {
+                console.error("Failed tto create player")
+            }
+        }catch(err)  {
+            console.error(err.message);
+        }
+    }
+
+
 	return (
 		<>
-			<form>
+			<form onSubmit={handleSubmit}>
 				<label htmlFor="name">Name:</label>
 				<input
 					type="text"
@@ -125,6 +147,7 @@ const PlayerForm = () => {
 					onChange={handleChange}
 				/>
                 <br /><br />
+                <button type="submit">Submit</button>
 			</form>
 		</>
 	);
