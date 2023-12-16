@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PlayerDetails from "./PlayerDetails";
 
 const PlayerSearch = () => {
     const [searchName, setSearchName] = useState('');
@@ -30,8 +31,8 @@ const PlayerSearch = () => {
         value={searchName}
         onChange={(e) => setSearchName(e.target.value)}
       />
-         <button onClick={handleSearch}>Search</button>
-
+        <button onClick={handleSearch}>Search</button>
+        <PlayerDetails playerData={playerData}/>
         </>
     )
 }
