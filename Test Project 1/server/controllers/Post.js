@@ -1,11 +1,11 @@
 const Post = require("../model/Post");
-
+const Comment = require('../model/Comments');
 exports.getPosts = async (req, res, next) => {
 	try {
-		const posts = await Post.findAll();
+		const posts = await Post.findAll({include : Comment});
 		res.json(posts);
 	} catch (err) {
-		console.errror(err);
+		console.error(err);
 		res.status(500).json({ error: "Internal Server Error" });
 	}
 };

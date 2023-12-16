@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState} from "react";
 
 const Post = () => {
 	const [imageUrl, setImageUrl] = useState("");
 	const [description, setDescription] = useState("");
+	const [commentText, setCommentText] = useState("");
+
 	const [posts, setPosts] = useState([]);
 
 	useEffect(() => {
@@ -40,6 +42,31 @@ const Post = () => {
 		}
 	};
 
+	const handleCommentSubmit = async (postId) => {
+		try {
+			const response = await fetch("http://localhost:3001/api/comments", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ postId, text: commentText }),
+			});
+
+			const data = await response.json();
+
+			setPosts((prevPosts) => {
+				prevPosts.map((post) =>
+					post.id === postId
+						? { ...post, Comments: [...post.Comments, data] }
+						: post
+				);
+			});
+
+			setCommentText("");
+		} catch (err) {
+			console.error(err);
+		}
+	};
 	return (
 		<>
 			<form onSubmit={handleSubmit}>
@@ -71,6 +98,29 @@ const Post = () => {
 						<div key={post.id}>
 							<img src={post.imageUrl} alt={post.description} />
 							<p>{post.description}</p>
+							{/* <div>
+								{post.Comments.map((comment) => (
+									<p key={comment.id}>{comment.text}</p>
+								))}
+							</div> */}
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									handleCommentSubmit(post.id);
+								}}
+							>
+								<label>
+									Comment :
+									<input
+										type="text"
+										value={commentText}
+										onChange={(e) =>
+											setCommentText(e.value.target)
+										}
+									/>
+								</label>
+								<button type="submit"> Post Comment</button>
+							</form>
 						</div>
 					))
 				)}
