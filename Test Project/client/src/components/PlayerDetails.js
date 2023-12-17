@@ -6,9 +6,9 @@ const PlayerDetails = ({ playerData }) => {
 					<h2>Player Details</h2>
 					<p>Name: {playerData.name}</p>
 					<p>Date of Birth: {playerData.dob}</p>
-					<p>
-						<img src={playerData.imageUrl} alt={playerData.name} />
-					</p>
+					<div>
+						<img src={playerData.photoUrl} alt={playerData.name} />
+					</div>
 					<p>Birthplace: {playerData.birthplace}</p>
 					<p>Career: {playerData.career}</p>
 					<p>matches: {playerData.matches}</p>

@@ -26,7 +26,7 @@ const PlayerForm = () => {
         e.preventDefault();
         try {
             const response = await fetch("http://localhost:3001/players", {
-               methods : 'POST',
+               method : 'POST',
                headers : {
                 'Content-Type' : 'application/json',
                } ,
