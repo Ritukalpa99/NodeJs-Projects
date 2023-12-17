@@ -14,8 +14,8 @@ app.use(cors());
 app.use("/players", playerRoutes);
 
 sequelize
-	// .sync()
-	.sync({force : true})
+	.sync()
+	// .sync({force : true})
 	.then(() => {
 		app.listen(PORT, () => {
 			console.log(`Server is running at ${PORT}`);
