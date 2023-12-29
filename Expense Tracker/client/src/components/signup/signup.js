@@ -10,12 +10,16 @@ const Singup = () => {
 		e.preventDefault();
 		// alert(`${name} ${mail} ${password}`)
 		try {
+			let url = "http://localhost:3001/user/login";
 			const formData = {
-				name: name,
 				email: mail,
 				password: password,
 			};
-			await fetch(`http://localhost:3001/user/signup`, {
+			if (!isLogin) {
+				url = "http://localhost:3001/user/signup";
+				formData.name = name;
+			}
+			await fetch(url, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -25,6 +29,9 @@ const Singup = () => {
 		} catch (err) {
 			console.error(err.message);
 		}
+		setName("");
+		setMail("");
+		setPassword("");
 	};
 
 	return (
@@ -42,8 +49,8 @@ const Singup = () => {
 							required
 							onChange={(e) => setName(e.target.value)}
 						/>
-					<br />
-					<br />
+						<br />
+						<br />
 					</div>
 				)}
 				<label htmlFor="mail">Enter Email</label>
