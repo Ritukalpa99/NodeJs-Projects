@@ -1,8 +1,16 @@
 const User = require('../model/user');
+const bcrypt = require('bcrypt');
 
+const saltRounds = 10;
 exports.createUser = async (req,res) => {
     try {
-        const user = await User.create(req.body);
+        const {email, password, name} = req.body;
+        const hashedPassword = await bcrypt.hash(password, saltRounds); 
+        const user = await User.create({
+            name,
+            email,
+            password : hashedPassword
+        });
         res.json(user);
     }
     catch(err) {
@@ -17,12 +25,15 @@ exports.authenticateUser = async (req,res) => {
         const userRes = await User.findAll({where : {email : email}});
        
         if(userRes.length === 0) {
-            return res.status(404).json({error : 'User not found'})
+            return res.status(404).json({success : false ,message : 'User not found'})
         }
         const user = userRes[0].dataValues;
+        const hashedPassword = user.password;
+
+        const passwordMatch = await bcrypt.compare(password, hashedPassword);
         
-        if(user.password !== password) {
-            return res.statu(401).json({error : 'Unauthorized'});
+        if(!passwordMatch) {
+            return res.status(401).json({success :false, message : 'Unauthorized'});
         }
         
         console.log('Successfully logged in');

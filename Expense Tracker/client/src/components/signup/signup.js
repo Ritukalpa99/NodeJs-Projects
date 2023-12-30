@@ -19,13 +19,16 @@ const Singup = () => {
 				url = "http://localhost:3001/user/signup";
 				formData.name = name;
 			}
-			await fetch(url, {
+			const res = await fetch(url, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(formData),
 			});
+			if(res.ok) {
+				alert("User created successfully");
+			}
 		} catch (err) {
 			console.error(err.message);
 		}
