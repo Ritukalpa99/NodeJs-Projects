@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Singup = () => {
 	const [name, setName] = useState("");
 	const [mail, setMail] = useState("");
 	const [password, setPassword] = useState("");
 	const [isLogin, setIsLogin] = useState(false);
+
+	const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -27,7 +30,8 @@ const Singup = () => {
 				body: JSON.stringify(formData),
 			});
 			if(res.ok) {
-				alert("User created successfully");
+				alert('User successfully logged in')
+				navigate('/expenses');
 			}
 		} catch (err) {
 			console.error(err.message);

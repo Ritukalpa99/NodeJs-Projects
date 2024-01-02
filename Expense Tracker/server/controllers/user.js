@@ -23,7 +23,7 @@ exports.authenticateUser = async (req,res) => {
     try {
         const {email, password} = req.body;
         const userRes = await User.findAll({where : {email : email}});
-       
+        console.log(userRes);
         if(userRes.length === 0) {
             return res.status(404).json({success : false ,message : 'User not found'})
         }
@@ -35,7 +35,7 @@ exports.authenticateUser = async (req,res) => {
         if(!passwordMatch) {
             return res.status(401).json({success :false, message : 'Unauthorized'});
         }
-        
+        res.json(userRes)
         console.log('Successfully logged in');
     }
     catch(err) {
