@@ -6,10 +6,18 @@ const ExpenseForm = () => {
 	const [description, setDescription] = useState("");
 	const [category, setCategory] = useState("");
 
+	
 	useEffect(() => {
+		const token = localStorage.getItem('user');
 		const fetchData = async () => {
 			try {
-				const response = await fetch("http://localhost:3001/expenses");
+				const response = await fetch("http://localhost:3001/expenses", {
+					method : "GET",
+					headers : {
+						"Content-Type": "application/json",
+						"Authorization" : token,
+					}
+				});
 
 				if (!response.ok) {
 					throw new Error("Error fetching expenses");

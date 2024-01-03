@@ -31,7 +31,10 @@ const Singup = () => {
 			});
 			if(res.ok) {
 				alert('User successfully logged in')
+				const data = await res.json();
+				localStorage.setItem('user', data.token);
 				navigate('/expenses');
+				// console.log(data);
 			}
 		} catch (err) {
 			console.error(err.message);

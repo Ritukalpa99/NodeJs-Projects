@@ -1,7 +1,13 @@
 const User = require('../model/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const saltRounds = 10;
+
+function generateAccessToken(id) {
+    return jwt.sign({userId : id}, 'secretkey')
+}
+
 exports.createUser = async (req,res) => {
     try {
         const {email, password, name} = req.body;
@@ -23,7 +29,7 @@ exports.authenticateUser = async (req,res) => {
     try {
         const {email, password} = req.body;
         const userRes = await User.findAll({where : {email : email}});
-        console.log(userRes);
+        // console.log(userRes);
         if(userRes.length === 0) {
             return res.status(404).json({success : false ,message : 'User not found'})
         }
@@ -35,8 +41,8 @@ exports.authenticateUser = async (req,res) => {
         if(!passwordMatch) {
             return res.status(401).json({success :false, message : 'Unauthorized'});
         }
-        res.json(userRes)
-        console.log('Successfully logged in');
+        // res.json(userRes)
+        res.status(200).json({success : true, message : "User logged in successfully", token : generateAccessToken(user.id)})
     }
     catch(err) {
         res.status(500).json({error :err.message})
