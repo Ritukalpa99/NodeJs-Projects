@@ -13,7 +13,7 @@ exports.addExpense = async (req,res) => {
 
 exports.getExpense = async (req,res) => {
     try {
-        const expense = await Expense.findAll();
+        const expense = await Expense.findAll({where : {userId : req.user.id}});
         res.json(expense);
     } catch(err) {
         res.status(500).json({error : err.message});
