@@ -1,22 +1,23 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ExpenseForm = () => {
 	const [expenses, setExpenses] = useState([]);
 	const [amount, setAmount] = useState(0);
 	const [description, setDescription] = useState("");
 	const [category, setCategory] = useState("");
+	const navigate = useNavigate();
 
-	
 	useEffect(() => {
-		const token = localStorage.getItem('user');
+		const token = localStorage.getItem("user");
 		const fetchData = async () => {
 			try {
 				const response = await fetch("http://localhost:3001/expenses", {
-					method : "GET",
-					headers : {
+					method: "GET",
+					headers: {
 						"Content-Type": "application/json",
-						"Authorization" : token,
-					}
+						Authorization: token,
+					},
 				});
 
 				if (!response.ok) {
@@ -31,17 +32,43 @@ const ExpenseForm = () => {
 		fetchData();
 	}, []);
 
-	const handleAddExpense = async (e) => {
-        // alert(category)
+	const handleDelete = async (id) => {
 		try {
+			const token = localStorage.getItem("user");
+			const response = await fetch(
+				`http://localhost:3001/expenses/delete-expense/${id}`,
+				{
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: token,
+					},
+				}
+			);
+			
+			if (response.ok) {
+				// throw new Error("not working");
+				setExpenses((prevExp) => prevExp.filter(exp => exp.id !== id))
+				navigate('/expenses')
+			}
+		} catch (e) {
+			console.log("err" + e.message);
+		}
+	}
+
+	const handleAddExpense = async (e) => {
+		// alert(category)
+		try {
+			const token = localStorage.getItem("user");
 			const response = await fetch(
 				"http://localhost:3001/expenses/add-expense",
 				{
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
+						Authorization: token,
 					},
-					body: JSON.stringify({ amount, description ,category }),
+					body: JSON.stringify({ amount, description, category }),
 				}
 			);
 
@@ -58,8 +85,6 @@ const ExpenseForm = () => {
 
 	return (
 		<>
-			
-
 			<form onSubmit={handleAddExpense}>
 				<label htmlFor="amount">Enter amount</label>
 				<input
@@ -78,8 +103,12 @@ const ExpenseForm = () => {
 					value={description}
 					onChange={(e) => setDescription(e.target.value)}
 				/>
-                <label htmlFor="category">Select Category</label>
-				<select name="category" id="category" onChange={(e) => setCategory(e.target.value)}>
+				<label htmlFor="category">Select Category</label>
+				<select
+					name="category"
+					id="category"
+					onChange={(e) => setCategory(e.target.value)}
+				>
 					<option value="food">Food</option>
 					<option value="travel">Travel</option>
 					<option value="shopping">Shopping</option>
@@ -87,14 +116,18 @@ const ExpenseForm = () => {
 				</select>
 				<button>Add Expenses</button>
 			</form>
-            <ul>
+			<ul>
 				{expenses.length <= 0 ? (
 					<p>NO expenses</p>
 				) : (
 					expenses.map((exp) => (
-						<li key={exp.id}>
-							Rs. {exp.amount} - {exp.description} - {exp.category} 
-						</li>
+						<div>
+							<li key={exp.id}>
+								Rs. {exp.amount} - {exp.description} -{" "}
+								{exp.category}
+							</li>
+							<button onClick={() => handleDelete(exp.id)}>Delete</button>
+						</div>
 					))
 				)}
 			</ul>
