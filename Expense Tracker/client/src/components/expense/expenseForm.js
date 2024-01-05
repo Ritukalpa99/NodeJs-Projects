@@ -45,16 +45,18 @@ const ExpenseForm = () => {
 					},
 				}
 			);
-			
+
 			if (response.ok) {
 				// throw new Error("not working");
-				setExpenses((prevExp) => prevExp.filter(exp => exp.id !== id))
-				navigate('/expenses')
+				setExpenses((prevExp) =>
+					prevExp.filter((exp) => exp.id !== id)
+				);
+				navigate("/expenses");
 			}
 		} catch (e) {
 			console.log("err" + e.message);
 		}
-	}
+	};
 
 	const handleAddExpense = async (e) => {
 		// alert(category)
@@ -81,6 +83,20 @@ const ExpenseForm = () => {
 		} catch (e) {
 			console.log("err" + e.message);
 		}
+	};
+
+	const handlePremium = async (e) => {
+		e.preventDefault();
+		const token = localStorage.getItem("user");
+		const response = await fetch("http://localhost:3001/premium/get-premium", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: token,
+			},
+		});
+		console.log(await response.json());
+		// alert('nuttom clicked')
 	};
 
 	return (
@@ -116,6 +132,7 @@ const ExpenseForm = () => {
 				</select>
 				<button>Add Expenses</button>
 			</form>
+			<button onClick={handlePremium}>Buy Premium</button>
 			<ul>
 				{expenses.length <= 0 ? (
 					<p>NO expenses</p>
@@ -126,7 +143,9 @@ const ExpenseForm = () => {
 								Rs. {exp.amount} - {exp.description} -{" "}
 								{exp.category}
 							</li>
-							<button onClick={() => handleDelete(exp.id)}>Delete</button>
+							<button onClick={() => handleDelete(exp.id)}>
+								Delete
+							</button>
 						</div>
 					))
 				)}

@@ -19,7 +19,6 @@ exports.addExpense = async (req, res) => {
 exports.getExpense = async (req, res) => {
 	try {
 		// const expense = req.user.getExpense() similar to below code
-
 		const expense = await Expense.findAll({
 			where: { userId: req.user.id },
 		});
