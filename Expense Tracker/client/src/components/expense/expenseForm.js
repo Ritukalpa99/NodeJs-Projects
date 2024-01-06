@@ -86,17 +86,51 @@ const ExpenseForm = () => {
 	};
 
 	const handlePremium = async (e) => {
-		e.preventDefault();
+		alert('ehy')
 		const token = localStorage.getItem("user");
-		const response = await fetch("http://localhost:3001/premium/get-premium", {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: token,
-			},
-		});
-		console.log(await response.json());
-		// alert('nuttom clicked')
+		const response = await fetch(
+			"http://localhost:3001/premium/get-premium",
+			{
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: token,
+				},
+			}
+		);
+			const data = await response.json();
+			// console.log(data.orderId);
+			// alert(data.orderId, data.key_id);
+			if(data) {
+				// alert('its working')
+				var options = {
+					'key' : data.key_id,
+					'order_id': data.orderId,
+					'handler': async function (response) {
+						await fetch(
+							"http://localhost:3001/premium/update-transaction",
+							{
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+									Authorization: token,
+								},
+								body: JSON.stringify({
+									order_id: options.order_id,
+									payment_id: response.razorpay_payment_id,
+								}),
+							}
+						);
+						alert('You are a Premium User');
+					},
+				};
+				const rzp1 = new window.Razorpay(options)
+				rzp1.on('payment.failed', function(response) {
+					alert(response.err.code);
+				})
+				rzp1.open();
+				e.preventDefault();
+			}
 	};
 
 	return (
