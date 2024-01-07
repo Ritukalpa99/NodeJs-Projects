@@ -62,26 +62,17 @@ exports.updateTransaction = async (req, res) => {
 
 exports.getUserLeaderBoard = async (req, res) => {
 	try {
-		const users = await User.findAll({
-            attributes : ['id','name']
-        });
-		const expenses = await Expense.findAll({
-            attributes : ['userId',[Sequelize.fn('sum',Sequelize.col('amount')),'total']],
-            group : ['userId']
-        });
-        // console.log(expenses);
+		const leaderboardDetails = await User.findAll({
+            attributes : ['id','name',[Sequelize.fn('sum',Sequelize.col('amount')),'total']],
+            include : [{
+                model : Expense,
+                attributes : [],
+            }],
+            group : ['user.id'],
+            order: [[Sequelize.literal('total'),'DESC']]
+        });	
 		
-		let userLeaderboardDetails = [];
-		// users.forEach((user) => {
-		// 	userLeaderboardDetails.push({
-		// 		name: user.name,
-		// 		total: userAggreatedExepnse[user.id],
-		// 	});
-		// });
-		userLeaderboardDetails.sort((a, b) => {
-			return b.total - a.total;
-		});
-        // res.json(userLeaderboardDetails);
+        res.json(leaderboardDetails);
 	} catch (err) {
 		console.log(err);
 	}
