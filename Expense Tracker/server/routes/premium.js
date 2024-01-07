@@ -9,4 +9,6 @@ router.get('/get-premium',userAuthentication.authenticate, premiumController.pur
 
 router.post('/update-transaction', userAuthentication.authenticate, premiumController.updateTransaction)
 
+router.get('/leaderboard', premiumController.getUserLeaderBoard)
+
 module.exports = router;

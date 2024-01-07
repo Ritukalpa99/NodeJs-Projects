@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import LeaderBoard from "../leaderboard/leaderboard";
 
 const ExpenseForm = () => {
 	const [expenses, setExpenses] = useState([]);
 	const [amount, setAmount] = useState(0);
-	const [description, setDescription] = useState("");
+	const [description, setDescription] = useState("");	
 	const [category, setCategory] = useState("");
 	const [isPremium, setIsPremium] = useState(false);
+	const [showLeaderboard, setShowLeaderboard] = useState(false);
+	const [leaderboard, setLeaderboard] = useState([]);
 	const navigate = useNavigate();
 
 	function parseJwt (token) {
@@ -153,8 +156,31 @@ const ExpenseForm = () => {
 		}
 	};
 
+	const handleLeaderboard = async (e) => {
+		e.preventDefault();
+		setShowLeaderboard((prev) => !prev);
+		try {
+			const response = await fetch("http://localhost:3001/premium/leaderboard", {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+
+			// if (!response.ok) {
+			// 	throw new Error("Error fetching expenses");
+			// }
+			const data = await response.json();
+			setLeaderboard(data);
+			
+		} catch (err) {
+			console.error("Error fetching expense", err.message);
+		}
+	} 
+
 	return (
 		<>
+			<div>
 			<form onSubmit={handleAddExpense}>
 				<label htmlFor="amount">Enter amount</label>
 				<input
@@ -191,6 +217,8 @@ const ExpenseForm = () => {
 			) : (
 				<button onClick={handlePremium}>Buy Premium</button>
 			)}
+			</div>
+			<div>
 			<ul>
 				{expenses.length <= 0 ? (
 					<p>NO expenses</p>
@@ -208,6 +236,16 @@ const ExpenseForm = () => {
 					))
 				)}
 			</ul>
+			</div>
+			<div>
+			{isPremium ? (
+				<div>
+					
+					<button onClick={handleLeaderboard}>{showLeaderboard ? "Hide LeaderBoard" : "Show LeaderBoard"}</button>
+					{showLeaderboard ? leaderboard ?<LeaderBoard details={leaderboard}/>: <p>"loading" </p>  : null}
+				</div>
+			) : null}
+			</div>
 		</>
 	);
 };
