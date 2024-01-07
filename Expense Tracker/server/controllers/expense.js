@@ -1,4 +1,5 @@
 const Expense = require("../model/expense");
+const User = require("../model/user");
 
 exports.addExpense = async (req, res) => {
 	const { amount, description, category } = req.body;
@@ -10,6 +11,8 @@ exports.addExpense = async (req, res) => {
 			category,
 			userId,
 		});
+		const totalExpense = Number(req.user.totalExpenses) + Number(amount);
+		await User.update({totalExpenses : totalExpense}, {where : {id : userId}})
 		res.json(expense);
 	} catch (err) {
 		res.status(500).json({ error: err.message });

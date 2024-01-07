@@ -56,20 +56,14 @@ exports.updateTransaction = async (req, res) => {
 			token: userController.generateAccessToken(req.user.id, true),
 		});
 	} catch (err) {
-		res.status(404).json({ error: err, message: "Somethign went wrong" });
+		res.status(404).json({ error: err, message: "Something went wrong" });
 	}
 };
 
 exports.getUserLeaderBoard = async (req, res) => {
 	try {
 		const leaderboardDetails = await User.findAll({
-            attributes : ['id','name',[Sequelize.fn('sum',Sequelize.col('amount')),'total']],
-            include : [{
-                model : Expense,
-                attributes : [],
-            }],
-            group : ['user.id'],
-            order: [[Sequelize.literal('total'),'DESC']]
+            order: [[Sequelize.literal('totalExpenses'),'DESC']]
         });	
 		
         res.json(leaderboardDetails);

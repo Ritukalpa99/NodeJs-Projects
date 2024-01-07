@@ -30,10 +30,15 @@ const Singup = () => {
 				body: JSON.stringify(formData),
 			});
 			if(res.ok) {
-				alert('User successfully logged in')
-				const data = await res.json();
-				localStorage.setItem('user', data.token);
-				navigate('/expenses');
+				if(isLogin) {
+					alert('User successfully logged in')
+					const data = await res.json();
+					localStorage.setItem('user', data.token);
+					navigate('/expenses');
+				} else {
+					alert('User registered');
+					setIsLogin(true);
+				}
 				// console.log(data);
 			}
 		} catch (err) {
