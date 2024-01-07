@@ -167,9 +167,9 @@ const ExpenseForm = () => {
 				},
 			});
 
-			// if (!response.ok) {
-			// 	throw new Error("Error fetching expenses");
-			// }
+			if (!response.ok) {
+				throw new Error("Error fetching expenses");
+			}
 			const data = await response.json();
 			setLeaderboard(data);
 			
