@@ -4,8 +4,8 @@ const jwt = require('jsonwebtoken');
 
 const saltRounds = 10;
 
-function generateAccessToken(id) {
-    return jwt.sign({userId : id}, 'secretkey')
+const generateAccessToken = (id, isPremiumuser) => {
+    return jwt.sign({userId : id,isPremiumuser}, 'secretkey')
 }
 
 exports.createUser = async (req,res) => {
@@ -42,9 +42,12 @@ exports.authenticateUser = async (req,res) => {
             return res.status(401).json({success :false, message : 'Unauthorized'});
         }
         // res.json(userRes)
-        res.status(200).json({success : true, message : "User logged in successfully", token : generateAccessToken(user.id)})
+        res.status(200).json({success : true, message : "User logged in successfully", token : generateAccessToken(user.id, user.isPremiumuser)})
     }
     catch(err) {
         res.status(500).json({error :err.message})
     }
 }
+
+exports.generateAccessToken = generateAccessToken;
+

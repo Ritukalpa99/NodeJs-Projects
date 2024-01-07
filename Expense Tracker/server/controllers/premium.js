@@ -2,6 +2,7 @@ require('dotenv').config();
 const Razorpay = require('razorpay');
 const Order = require('../model/order');
 const User = require('../model/user')
+const userController = require('./user');
 
 exports.purchasePremium = async (req,res) => {
     try {
@@ -33,7 +34,7 @@ exports.updateTransaction = async (req,res) => {
         await Order.update({paymentId : payment_id, status : 'SUCCESSFUL', userId : req.user.id}, {where : {orderId : order_id}});
         await User.update({isPremiumuser : true}, {where : {id : req.user.id}})
         
-        res.status(200).json({message : 'Transaction updated successfully'})
+        res.status(200).json({message : 'Transaction updated successfully',token : userController.generateAccessToken(req.user.id,true)})
     }catch(err) {
         res.status(404).json({error : err, message : 'Somethign went wrong'})
     }
