@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ForgotPassword from "../modal/forgetpassword";
 
 const Singup = () => {
 	const [name, setName] = useState("");
 	const [mail, setMail] = useState("");
 	const [password, setPassword] = useState("");
 	const [isLogin, setIsLogin] = useState(false);
+	const [showModal, setShowModal] = useState(false);
 
 	const navigate = useNavigate();
+
+	const crossModal = () => {
+		setShowModal(false)
+	}
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -51,6 +57,10 @@ const Singup = () => {
 
 	return (
 		<>
+		{showModal && 
+		
+			<ForgotPassword closeModal={crossModal}/>
+		}
 			<h1>{!isLogin ? "Sign Up Page" : "Login Page"}</h1>
 			<form onSubmit={handleSubmit}>
 				{!isLogin && (
@@ -77,6 +87,7 @@ const Singup = () => {
 					required
 					onChange={(e) => setMail(e.target.value)}
 				/>
+				
 				<br />
 				<br />
 				<label htmlFor="password">Enter Password</label>
@@ -101,6 +112,10 @@ const Singup = () => {
 						? "New User ? Sign Up"
 						: "Already Registered? Sign In"}
 				</button>
+				<br/><br/>
+				{isLogin && (
+					<button onClick={() => setShowModal(true)}>Forgot Password</button>
+				)}
 			</form>
 		</>
 	);

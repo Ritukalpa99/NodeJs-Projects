@@ -10,6 +10,7 @@ const ExpenseForm = () => {
 	const [isPremium, setIsPremium] = useState(false);
 	const [showLeaderboard, setShowLeaderboard] = useState(false);
 	const [leaderboard, setLeaderboard] = useState([]);
+
 	const navigate = useNavigate();
 
 	function parseJwt (token) {
