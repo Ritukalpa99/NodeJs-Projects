@@ -50,11 +50,11 @@ const ExpenseForm = () => {
 		fetchData();
 	}, []);
 
-	const handleDelete = async (id) => {
+	const handleDelete = async (id,amount) => {
 		try {
 			const token = localStorage.getItem("user");
 			const response = await fetch(
-				`http://localhost:3001/expenses/delete-expense/${id}`,
+				`http://localhost:3001/expenses/delete-expense/${id}:${amount}`,
 				{
 					method: "DELETE",
 					headers: {
@@ -226,10 +226,10 @@ const ExpenseForm = () => {
 					expenses.map((exp) => (
 						<div>
 							<li key={exp.id}>
-								Rs. {exp.amount} - {exp.description} -{" "}
+								Rs. {exp.amount} - {exp.id} - {exp.description} -{" "}
 								{exp.category}
 							</li>
-							<button onClick={() => handleDelete(exp.id)}>
+							<button onClick={() => handleDelete(exp.id, exp.amount)}>
 								Delete
 							</button>
 						</div>

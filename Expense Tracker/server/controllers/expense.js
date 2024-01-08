@@ -48,21 +48,29 @@ exports.getExpense = async (req, res) => {
 };
 
 exports.deleteExpense = async (req, res) => {
-	const { expenseId } = req.params;
+	const { expenseData } = req.params;
+	const extractData = expenseData.split(":");
+	const expenseId = Number(extractData[0]);
+	const t = await sequelize.transaction();
 	try {
-		// console.log(`Got this ${expenseId}`);
-		const expense = await Expense.findByPk(expenseId);
-		if (!expense) {
-			return res
-				.status(404)
-				.json({ success: false, message: "Expense not found" });
-		}
-		await expense.destroy();
+		await Expense.destroy({ where: { id: expenseId }, transaction: t });
+
+		const totalExpenses =
+			Number(req.user.totalExpenses) - Number(extractData[1]);
+		await User.update(
+			{ totalExpenses: totalExpenses },
+			{ where: { id: req.user.id }, transaction: t }
+		);
+
+		await t.commit();
 		res.status(200).json({
 			success: true,
 			message: "Expense deleted successfully",
 		});
 	} catch (err) {
+
+		await t.rollback();
 		console.log(err.message);
+		res.status(500).json({ success: false, message: "server error" });
 	}
 };
