@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import ForgotPassword from "../modal/forgetpassword";
 
 const Singup = () => {
@@ -8,13 +8,19 @@ const Singup = () => {
 	const [password, setPassword] = useState("");
 	const [isLogin, setIsLogin] = useState(false);
 	const [showModal, setShowModal] = useState(false);
+	const location = useLocation();
 
 	const navigate = useNavigate();
 
 	const crossModal = () => {
 		setShowModal(false)
 	}
+	useEffect(() => {
+		if(location.pathname === '/login') {
+			setIsLogin(true);
+		}
 
+	},[])
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		// alert(`${name} ${mail} ${password}`)
