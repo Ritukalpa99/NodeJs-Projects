@@ -227,7 +227,7 @@ const ExpenseForm = () => {
 					expenses.map((exp) => (
 						<div>
 							<li key={exp.id}>
-								Rs. {exp.amount} - {exp.id} - {exp.description} -{" "}
+								Rs. {exp.amount} - {exp.description} -{" "}
 								{exp.category}
 							</li>
 							<button onClick={() => handleDelete(exp.id, exp.amount)}>
