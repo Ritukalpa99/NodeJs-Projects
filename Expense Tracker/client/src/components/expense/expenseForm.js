@@ -179,6 +179,25 @@ const ExpenseForm = () => {
 		}
 	} 
 
+	const handleDownload = async() => {
+		const token = localStorage.getItem("user");
+		try{
+			// if(!isPremium) {
+			// 	alert('You are not a premium user');
+			// 	return;
+			// }
+			await fetch("http://localhost:3001/expenses/download-expenses", {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: token,
+					},
+				});
+
+		} catch(err) {
+			console.log(err);
+		}
+	}
 	return (
 		<>
 			<div>
@@ -219,6 +238,7 @@ const ExpenseForm = () => {
 				<button onClick={handlePremium}>Buy Premium</button>
 			)}
 			</div>
+			<button onClick={handleDownload}>Download Expense</button>
 			<div>
 			<ul>
 				{expenses.length <= 0 ? (

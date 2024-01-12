@@ -1,6 +1,8 @@
 const Expense = require("../model/expense");
 const User = require("../model/user");
 const sequelize = require("../util/database");
+require("dotenv").config();
+const AWS = require('aws-sdk')
 
 exports.addExpense = async (req, res) => {
 	const { amount, description, category } = req.body;
@@ -74,3 +76,40 @@ exports.deleteExpense = async (req, res) => {
 		res.status(500).json({ success: false, message: "server error" });
 	}
 };
+
+const uploadToS3 = (data,filename) => {
+	
+	let s3bucket = new AWS.S3({
+		accessKeyId : process.env.IAM_USER_KEY,
+		secretAccessKey : process.env.IAM_USER_SECRET,
+	})
+	let params = {
+		Bucket :process.env.BUCKET_NAME,
+		Key : filename,
+		Body : data,
+		ACL : 'public-read'
+	}
+	s3bucket.createBucket(() => {
+		s3bucket.upload(params, (err,s3response) => {
+			if(err) {
+				console.log('something went wrong',err);
+			} else {
+				console.log('success', s3response);
+			}
+		} )
+	})
+}
+
+exports.downloadExpense = async(req,res) => {
+	try {
+		const expenses = await req.user.getExpenses();
+		// console.log(expenses);
+		const stringifiedExpense = JSON.stringify(expenses);
+		const filename = 'Expense.txt';
+		const fileUrl = uploadToS3(stringifiedExpense,filename);
+		res.status(200).json({fileUrl, success : true});
+	}
+	catch(err) {
+		console.log(err);
+	}
+}
