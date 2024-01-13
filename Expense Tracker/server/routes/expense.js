@@ -23,4 +23,6 @@ router.delete(
 	expenseController.deleteExpense
 );
 
+router.get('/get-reports', userAuthentication.authenticate, expenseController.getReports)
+
 module.exports = router;

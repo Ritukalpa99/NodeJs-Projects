@@ -1,8 +1,8 @@
 const Expense = require("../model/expense");
 const User = require("../model/user");
+const Report = require("../model/report");
 const sequelize = require("../util/database");
-require("dotenv").config();
-const AWS = require('aws-sdk')
+const S3Service = require("../services/S3services");
 
 exports.addExpense = async (req, res) => {
 	const { amount, description, category } = req.body;
@@ -70,46 +70,36 @@ exports.deleteExpense = async (req, res) => {
 			message: "Expense deleted successfully",
 		});
 	} catch (err) {
-
 		await t.rollback();
 		console.log(err.message);
 		res.status(500).json({ success: false, message: "server error" });
 	}
 };
 
-const uploadToS3 = (data,filename) => {
-	
-	let s3bucket = new AWS.S3({
-		accessKeyId : process.env.IAM_USER_KEY,
-		secretAccessKey : process.env.IAM_USER_SECRET,
-	})
-	let params = {
-		Bucket :process.env.BUCKET_NAME,
-		Key : filename,
-		Body : data,
-		ACL : 'public-read'
-	}
-	s3bucket.createBucket(() => {
-		s3bucket.upload(params, (err,s3response) => {
-			if(err) {
-				console.log('something went wrong',err);
-			} else {
-				console.log('success', s3response);
-			}
-		} )
-	})
-}
-
-exports.downloadExpense = async(req,res) => {
+exports.downloadExpense = async (req, res) => {
 	try {
 		const expenses = await req.user.getExpenses();
 		// console.log(expenses);
 		const stringifiedExpense = JSON.stringify(expenses);
-		const filename = 'Expense.txt';
-		const fileUrl = uploadToS3(stringifiedExpense,filename);
-		res.status(200).json({fileUrl, success : true});
-	}
-	catch(err) {
+		const userId = req.user.id;
+		const filename = `Expense${userId}/${new Date()}.txt`;
+		const fileURL = await S3Service.uploadToS3(
+			stringifiedExpense,
+			filename
+		);
+		await req.user.createReport({fileUrl : fileURL})
+		res.status(201).json({ fileURL, success: true });
+	} catch (err) {
 		console.log(err);
+		res.status(500).json({ success: false, err: err });
 	}
-}
+};
+
+exports.getReports = async (req, res) => {
+	try {
+		const reports = await req.user.getReports();
+		res.status(200).json(reports);
+	} catch (err) {
+		res.status(500).json({ err: err, success: false });
+	}
+};

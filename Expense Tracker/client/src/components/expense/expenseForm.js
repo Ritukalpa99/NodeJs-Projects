@@ -5,28 +5,37 @@ import LeaderBoard from "../leaderboard/leaderboard";
 const ExpenseForm = () => {
 	const [expenses, setExpenses] = useState([]);
 	const [amount, setAmount] = useState(0);
-	const [description, setDescription] = useState("");	
+	const [description, setDescription] = useState("");
 	const [category, setCategory] = useState("");
 	const [isPremium, setIsPremium] = useState(false);
 	const [showLeaderboard, setShowLeaderboard] = useState(false);
 	const [leaderboard, setLeaderboard] = useState([]);
+	const [reports, setReport] = useState([]);
 
 	const navigate = useNavigate();
 
-	function parseJwt (token) {
-		var base64Url = token.split('.')[1];
-		var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-		var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-			return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-		}).join(''));
-	
+	function parseJwt(token) {
+		var base64Url = token.split(".")[1];
+		var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+		var jsonPayload = decodeURIComponent(
+			window
+				.atob(base64)
+				.split("")
+				.map(function (c) {
+					return (
+						"%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+					);
+				})
+				.join("")
+		);
+
 		return JSON.parse(jsonPayload);
 	}
 
 	useEffect(() => {
 		const token = localStorage.getItem("user");
 		const isPrem = parseJwt(token).isPremiumuser;
-		
+
 		const fetchData = async () => {
 			try {
 				const response = await fetch("http://localhost:3001/expenses", {
@@ -42,8 +51,8 @@ const ExpenseForm = () => {
 				}
 				const data = await response.json();
 				setExpenses(data);
-				
-				setIsPremium(isPrem)
+
+				setIsPremium(isPrem);
 			} catch (err) {
 				console.error("Error fetching expense", err.message);
 			}
@@ -51,7 +60,7 @@ const ExpenseForm = () => {
 		fetchData();
 	}, []);
 
-	const handleDelete = async (id,amount) => {
+	const handleDelete = async (id, amount) => {
 		try {
 			const token = localStorage.getItem("user");
 			const response = await fetch(
@@ -102,9 +111,36 @@ const ExpenseForm = () => {
 		} catch (e) {
 			console.log("err" + e.message);
 		}
-		
 	};
 
+	const handleReport = async (e) => {
+		e.preventDefault();
+		// if(!isPremium) {
+		// 	alert('You are not a premium User');
+		// 	return;
+		// }
+		try {
+			const token = localStorage.getItem("user");
+			const response = await fetch(
+				"http://localhost:3001/expenses/get-reports",
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: token,
+					},
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error("Error fetching expenses");
+			}
+			const data = await response.json();
+			setReport(data);
+		} catch (err) {
+			console.error(err.message);
+		}
+	};
 
 	const handlePremium = async (e) => {
 		const token = localStorage.getItem("user");
@@ -143,7 +179,7 @@ const ExpenseForm = () => {
 					);
 					const tokenData = await callResponse.json();
 					// console.log(tokenData);
-					localStorage.setItem('user',tokenData.token);
+					localStorage.setItem("user", tokenData.token);
 					alert("You are a Premium User");
 					setIsPremium(true);
 				},
@@ -161,111 +197,157 @@ const ExpenseForm = () => {
 		e.preventDefault();
 		setShowLeaderboard((prev) => !prev);
 		try {
-			const response = await fetch("http://localhost:3001/premium/leaderboard", {
-				method: "GET",
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
+			const response = await fetch(
+				"http://localhost:3001/premium/leaderboard",
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			);
 
 			if (!response.ok) {
 				throw new Error("Error fetching expenses");
 			}
 			const data = await response.json();
 			setLeaderboard(data);
-			
 		} catch (err) {
 			console.error("Error fetching expense", err.message);
 		}
-	} 
+	};
 
-	const handleDownload = async() => {
+	const handleDownload = async () => {
 		const token = localStorage.getItem("user");
-		try{
+		try {
 			// if(!isPremium) {
 			// 	alert('You are not a premium user');
 			// 	return;
 			// }
-			await fetch("http://localhost:3001/expenses/download-expenses", {
+			const response = await fetch(
+				"http://localhost:3001/expenses/download-expenses",
+				{
 					method: "GET",
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: token,
 					},
-				});
+				}
+			);
 
-		} catch(err) {
+			if (response.status === 201) {
+				const data = await response.json();
+
+				const a = document.createElement("a");
+				a.href = data.fileURL;
+				a.download = "myexpense.csv";
+				a.click();
+			} else {
+				throw new Error((await response.json()).message);
+			}
+		} catch (err) {
 			console.log(err);
 		}
-	}
+	};
 	return (
 		<>
 			<div>
-			<form onSubmit={handleAddExpense}>
-				<label htmlFor="amount">Enter amount</label>
-				<input
-					type="number"
-					name="amount"
-					id="amount"
-					value={amount}
-					onChange={(e) => setAmount(e.target.value)}
-				/>
-				<label htmlFor="description">Enter Description</label>
-				<input
-					type="text"
-					id="description"
-					name="description"
-					placeholder="description"
-					value={description}
-					onChange={(e) => setDescription(e.target.value)}
-				/>
-				<label htmlFor="category">Select Category</label>
-				<select
-					name="category"
-					id="category"
-					onChange={(e) => setCategory(e.target.value)}
-				>
-					<option value="food">Food</option>
-					<option value="travel">Travel</option>
-					<option value="shopping">Shopping</option>
-					<option value="misc">Miscellaneous</option>
-				</select>
-				<button>Add Expenses</button>
-			</form>
-			{isPremium ? (
-				<p> You are a premium User</p>
-			) : (
-				<button onClick={handlePremium}>Buy Premium</button>
-			)}
+				<form onSubmit={handleAddExpense}>
+					<label htmlFor="amount">Enter amount</label>
+					<input
+						type="number"
+						name="amount"
+						id="amount"
+						value={amount}
+						onChange={(e) => setAmount(e.target.value)}
+					/>
+					<label htmlFor="description">Enter Description</label>
+					<input
+						type="text"
+						id="description"
+						name="description"
+						placeholder="description"
+						value={description}
+						onChange={(e) => setDescription(e.target.value)}
+					/>
+					<label htmlFor="category">Select Category</label>
+					<select
+						name="category"
+						id="category"
+						onChange={(e) => setCategory(e.target.value)}
+					>
+						<option value="food">Food</option>
+						<option value="travel">Travel</option>
+						<option value="shopping">Shopping</option>
+						<option value="misc">Miscellaneous</option>
+					</select>
+					<button>Add Expenses</button>
+				</form>
+				{isPremium ? (
+					<p> You are a premium User</p>
+				) : (
+					<button onClick={handlePremium}>Buy Premium</button>
+				)}
 			</div>
 			<button onClick={handleDownload}>Download Expense</button>
 			<div>
-			<ul>
-				{expenses.length <= 0 ? (
-					<p>NO expenses</p>
-				) : (
-					expenses.map((exp) => (
-						<div>
-							<li key={exp.id}>
-								Rs. {exp.amount} - {exp.description} -{" "}
-								{exp.category}
-							</li>
-							<button onClick={() => handleDelete(exp.id, exp.amount)}>
-								Delete
-							</button>
-						</div>
-					))
-				)}
-			</ul>
+				<ul>
+					{expenses.length <= 0 ? (
+						<p>NO expenses</p>
+					) : (
+						expenses.map((exp) => (
+							<div>
+								<li key={exp.id}>
+									Rs. {exp.amount} - {exp.description} -{" "}
+									{exp.category}
+								</li>
+								<button
+									onClick={() =>
+										handleDelete(exp.id, exp.amount)
+									}
+								>
+									Delete
+								</button>
+							</div>
+						))
+					)}
+				</ul>
 			</div>
 			<div>
-			{isPremium ? (
-				<div>
-					
-					<button onClick={handleLeaderboard}>{showLeaderboard ? "Hide LeaderBoard" : "Show LeaderBoard"}</button>
-					{showLeaderboard ? leaderboard ?<LeaderBoard details={leaderboard}/>: <p>"loading" </p>  : null}
-				</div>
-			) : null}
+				<button onClick={handleReport}>Show Report</button>
+				{reports
+					? reports.map((report) => {
+							const {createdAt} = report;
+							const date = new Date(createdAt).toLocaleString(undefined, {timeZone: 'Asia/Kolkata'})
+							return (
+								
+
+								<li id={report.id}>
+									<a href={report.fileUrl}>
+										{date}
+									</a>
+								</li>
+							);
+					  })
+					: null}
+			</div>
+			<div>
+				{isPremium ? (
+					<div>
+						<button onClick={handleLeaderboard}>
+							{showLeaderboard
+								? "Hide LeaderBoard"
+								: "Show LeaderBoard"}
+						</button>
+						{showLeaderboard ? (
+							leaderboard ? (
+								<LeaderBoard details={leaderboard} />
+							) : (
+								<p>"loading" </p>
+							)
+						) : null}
+					</div>
+				) : null}
 			</div>
 		</>
 	);
