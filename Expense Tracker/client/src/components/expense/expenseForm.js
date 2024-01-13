@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LeaderBoard from "../leaderboard/leaderboard";
+import Expense from "./expenses";
 
 const ExpenseForm = () => {
 	const [expenses, setExpenses] = useState([]);
@@ -115,10 +116,10 @@ const ExpenseForm = () => {
 
 	const handleReport = async (e) => {
 		e.preventDefault();
-		// if(!isPremium) {
-		// 	alert('You are not a premium User');
-		// 	return;
-		// }
+		if(!isPremium) {
+			alert('You are not a premium User');
+			return;
+		}
 		try {
 			const token = localStorage.getItem("user");
 			const response = await fetch(
@@ -220,10 +221,10 @@ const ExpenseForm = () => {
 	const handleDownload = async () => {
 		const token = localStorage.getItem("user");
 		try {
-			// if(!isPremium) {
-			// 	alert('You are not a premium user');
-			// 	return;
-			// }
+			if(!isPremium) {
+				alert('You are not a premium user');
+				return;
+			}
 			const response = await fetch(
 				"http://localhost:3001/expenses/download-expenses",
 				{
@@ -291,7 +292,7 @@ const ExpenseForm = () => {
 			</div>
 			<button onClick={handleDownload}>Download Expense</button>
 			<div>
-				<ul>
+				{/* <ul>
 					{expenses.length <= 0 ? (
 						<p>NO expenses</p>
 					) : (
@@ -311,21 +312,21 @@ const ExpenseForm = () => {
 							</div>
 						))
 					)}
-				</ul>
+				</ul> */}
+				<Expense expenses={expenses} onHandleDelete={handleDelete}/>
 			</div>
 			<div>
 				<button onClick={handleReport}>Show Report</button>
 				{reports
 					? reports.map((report) => {
-							const {createdAt} = report;
-							const date = new Date(createdAt).toLocaleString(undefined, {timeZone: 'Asia/Kolkata'})
+							const { createdAt } = report;
+							const date = new Date(createdAt).toLocaleString(
+								undefined,
+								{ timeZone: "Asia/Kolkata" }
+							);
 							return (
-								
-
 								<li id={report.id}>
-									<a href={report.fileUrl}>
-										{date}
-									</a>
+									<a href={report.fileUrl}>{date}</a>
 								</li>
 							);
 					  })
