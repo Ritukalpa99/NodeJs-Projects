@@ -1,5 +1,6 @@
 import { useState } from "react"
 import Pagination from "../pagination/pagination";
+import "./expenses.css"
 
 const Expense = ({expenses,onHandleDelete}) => {
 
@@ -23,12 +24,12 @@ const Expense = ({expenses,onHandleDelete}) => {
 						<p>NO expenses</p>
 					) : (
 						currentExpense.map((exp) => (
-							<div>
+							<div className="list-expenses">
 								<li key={exp.id}>
 									Rs. {exp.amount} - {exp.description} -{" "}
 									{exp.category}
 								</li>
-								<button
+								<button className="list-delete-btn"
 									onClick={() =>
 										handleDelete(exp.id, exp.amount)
 									}

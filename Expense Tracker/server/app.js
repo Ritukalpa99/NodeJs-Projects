@@ -10,12 +10,13 @@ const Expense = require('./model/expense');
 const Order = require('./model/order');
 const Password = require('./model/password');
 const Report = require('./model/report');
+require("dotenv").config();
 
 const sequelize = require("./util/database");
 const cors = require("cors");
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.use(bodyParser.json());
 app.use(cors());

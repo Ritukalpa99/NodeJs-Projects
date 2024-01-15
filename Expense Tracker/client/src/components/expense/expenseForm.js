@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import LeaderBoard from "../leaderboard/leaderboard";
 import Expense from "./expenses";
+import "./expenseForm.css"
 
 const ExpenseForm = () => {
 	const [expenses, setExpenses] = useState([]);
@@ -188,11 +189,17 @@ const ExpenseForm = () => {
 			const rzp1 = new window.Razorpay(options);
 			rzp1.on("payment.failed", function (response) {
 				alert(response.err.code);
+				console.log(response);
 			});
 			rzp1.open();
 			e.preventDefault();
 		}
 	};
+
+	const handleLogout = () => {
+		localStorage.removeItem('user');
+		navigate('/');
+	}
 
 	const handleLeaderboard = async (e) => {
 		e.preventDefault();
@@ -251,8 +258,9 @@ const ExpenseForm = () => {
 		}
 	};
 	return (
-		<>
-			<div>
+		<div className="main-expense-body">
+			<button onClick={handleLogout} className="btn-logout">Logout</button>
+			<div className="expense-form">
 				<form onSubmit={handleAddExpense}>
 					<label htmlFor="amount">Enter amount</label>
 					<input
@@ -292,27 +300,6 @@ const ExpenseForm = () => {
 			</div>
 			<button onClick={handleDownload}>Download Expense</button>
 			<div>
-				{/* <ul>
-					{expenses.length <= 0 ? (
-						<p>NO expenses</p>
-					) : (
-						expenses.map((exp) => (
-							<div>
-								<li key={exp.id}>
-									Rs. {exp.amount} - {exp.description} -{" "}
-									{exp.category}
-								</li>
-								<button
-									onClick={() =>
-										handleDelete(exp.id, exp.amount)
-									}
-								>
-									Delete
-								</button>
-							</div>
-						))
-					)}
-				</ul> */}
 				<Expense expenses={expenses} onHandleDelete={handleDelete}/>
 			</div>
 			<div>
@@ -350,7 +337,7 @@ const ExpenseForm = () => {
 					</div>
 				) : null}
 			</div>
-		</>
+		</div>
 	);
 };
 

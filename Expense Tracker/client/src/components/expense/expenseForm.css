@@ -1,0 +1,24 @@
+.main-expense-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.btn-logout {
+    height: 2.5em;
+    width: 5em;
+    font-weight: bold;
+    margin-left: 70%;
+}
+.btn-logout:hover {
+    cursor: pointer;
+    color: white;
+    background-color: red;
+    border-color: red;
+}
+.expense-form {
+    /* background-color: red; */
+    margin-top: 2em;
+}
+ul {
+ list-style-type: none;
+}
