@@ -1,5 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const helmet = require('helmet')
+const morgan = require('morgan')
+const path = require('path');
+const fs = require('fs');
+
 const userRoutes = require("./routes/user");
 const expenseRoutes = require('./routes/expense')
 const premiumRoutes = require('./routes/premium');
@@ -18,8 +23,12 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const accessLogStream = fs.createWriteStream(path.join(__dirname,'access.log'), {flags : 'a'})
+
 app.use(bodyParser.json());
 app.use(cors());
+app.use(helmet())
+app.use(morgan('combined',{stream : accessLogStream}))
 
 app.use("/user", userRoutes);
 app.use("/expenses", expenseRoutes);
