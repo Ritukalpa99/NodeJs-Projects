@@ -44,7 +44,7 @@ const ExpenseForm = () => {
 					method: "GET",
 					headers: {
 						"Content-Type": "application/json",
-						Authorization: token,
+						"Authorization": localStorage.getItem("user"),
 					},
 				});
 
@@ -64,14 +64,14 @@ const ExpenseForm = () => {
 
 	const handleDelete = async (id, amount) => {
 		try {
-			const token = localStorage.getItem("user");
+			// const token = localStorage.getItem("user");
 			const response = await fetch(
 				`http://localhost:3001/expenses/delete-expense/${id}:${amount}`,
 				{
 					method: "DELETE",
 					headers: {
 						"Content-Type": "application/json",
-						Authorization: token,
+						"Authorization": localStorage.getItem("user"),
 					},
 				}
 			);
@@ -91,14 +91,14 @@ const ExpenseForm = () => {
 	const handleAddExpense = async (e) => {
 		// alert(category)
 		try {
-			const token = localStorage.getItem("user");
+			// const token = localStorage.getItem("user");
 			const response = await fetch(
 				"http://localhost:3001/expenses/add-expense",
 				{
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
-						Authorization: token,
+						"Authorization": localStorage.getItem("user"),
 					},
 					body: JSON.stringify({ amount, description, category }),
 				}
@@ -122,14 +122,14 @@ const ExpenseForm = () => {
 			return;
 		}
 		try {
-			const token = localStorage.getItem("user");
+			// const token = localStorage.getItem("user");
 			const response = await fetch(
 				"http://localhost:3001/expenses/get-reports",
 				{
 					method: "GET",
 					headers: {
 						"Content-Type": "application/json",
-						Authorization: token,
+						"Authorization": localStorage.getItem("user"),
 					},
 				}
 			);
@@ -145,14 +145,14 @@ const ExpenseForm = () => {
 	};
 
 	const handlePremium = async (e) => {
-		const token = localStorage.getItem("user");
+		// const token = localStorage.getItem("user");
 		const response = await fetch(
 			"http://localhost:3001/premium/get-premium",
 			{
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
-					Authorization: token,
+					"Authorization": localStorage.getItem("user"),
 				},
 			}
 		);
@@ -171,7 +171,7 @@ const ExpenseForm = () => {
 							method: "POST",
 							headers: {
 								"Content-Type": "application/json",
-								Authorization: token,
+								"Authorization": localStorage.getItem("user"),
 							},
 							body: JSON.stringify({
 								order_id: options.order_id,
@@ -226,7 +226,7 @@ const ExpenseForm = () => {
 	};
 
 	const handleDownload = async () => {
-		const token = localStorage.getItem("user");
+		// const token = localStorage.getItem("user");
 		try {
 			if(!isPremium) {
 				alert('You are not a premium user');
@@ -238,7 +238,7 @@ const ExpenseForm = () => {
 					method: "GET",
 					headers: {
 						"Content-Type": "application/json",
-						Authorization: token,
+						"Authorization": localStorage.getItem("user"),
 					},
 				}
 			);

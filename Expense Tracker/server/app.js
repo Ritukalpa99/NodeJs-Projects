@@ -27,13 +27,16 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname,'access.log'), 
 
 app.use(bodyParser.json());
 app.use(cors());
-app.use(helmet())
 app.use(morgan('combined',{stream : accessLogStream}))
+
+const buildPath = path.join(__dirname,"../client/build");
+// console.log(buildPath);
 
 app.use("/user", userRoutes);
 app.use("/expenses", expenseRoutes);
 app.use("/premium",premiumRoutes);
 app.use("/password", passwordRoutes);
+app.use(express.static(buildPath))
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
@@ -54,4 +57,8 @@ sequelize
 		app.listen(PORT, () => {
 			console.log(`Server is running at ${PORT}`);
 		});
+		// app.get("/*", (req,res) => {
+		// 	res.sendFile(path.join(buildPath,"index.html"))
+		// })
+
 	});

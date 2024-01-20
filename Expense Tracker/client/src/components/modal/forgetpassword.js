@@ -12,7 +12,7 @@ const ForgotPassword = ({ closeModal }) => {
 		e.preventDefault();
 		// alert(email);
 		try {
-			await fetch("http://localhost:3001/password/forgot-password",
+			const res = await fetch("http://localhost:3001/password/forgot-password",
 			{
 				method: "POST",
 				headers: {
@@ -20,6 +20,9 @@ const ForgotPassword = ({ closeModal }) => {
 				},
 				body: JSON.stringify({email}),
 			})
+			if(res.ok) {
+				alert('Reset email successfully sent')
+			}
 		}catch(err) {
 			console.log(err);
 		}
