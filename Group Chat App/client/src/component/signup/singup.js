@@ -6,10 +6,20 @@ const Signup = () => {
 	const [phoneNo, setPhoneNo] = useState("");
 	const [password, setPassword] = useState("");
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async(e) => {
 		e.preventDefault();
 
-        alert('Successfully submitted')
+        const res = await fetch('http://localhost:3001/user/signup', {
+            method : "POST",
+            headers : {
+                "Content-Type" : "application/json"
+            },
+            body : JSON.stringify({name, email, password, phoneNo})
+        })
+        // alert('Successfully submitted')
+        if(res.ok) {
+            alert('User registered');
+        }
 
 		setName("");
 		setEmail("");
