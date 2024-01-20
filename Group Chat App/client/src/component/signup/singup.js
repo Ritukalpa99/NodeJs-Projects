@@ -17,14 +17,17 @@ const Signup = () => {
             body : JSON.stringify({name, email, password, phoneNo})
         })
         // alert('Successfully submitted')
+        const data = await res.json();
         if(res.ok) {
             alert('User registered');
+            setName("");
+            setEmail("");
+            setPassword("");
+            setPhoneNo("");
+        } else {
+            alert(data.message)
         }
 
-		setName("");
-		setEmail("");
-		setPassword("");
-		setPhoneNo("");
 	};
 
 	return (
