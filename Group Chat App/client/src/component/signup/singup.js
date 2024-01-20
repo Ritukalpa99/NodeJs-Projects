@@ -5,45 +5,69 @@ const Signup = () => {
 	const [email, setEmail] = useState("");
 	const [phoneNo, setPhoneNo] = useState("");
 	const [password, setPassword] = useState("");
+	const [isLogin, setIsLogin] = useState(false);
 
-	const handleSubmit = async(e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
+		try {
+			let url = "http://localhost:3001/user/signup";
+			const formData = {
+				email: email,
+				password: password,
+			};
 
-        const res = await fetch('http://localhost:3001/user/signup', {
-            method : "POST",
-            headers : {
-                "Content-Type" : "application/json"
-            },
-            body : JSON.stringify({name, email, password, phoneNo})
-        })
-        // alert('Successfully submitted')
-        const data = await res.json();
-        if(res.ok) {
-            alert('User registered');
-            setName("");
-            setEmail("");
-            setPassword("");
-            setPhoneNo("");
-        } else {
-            alert(data.message)
-        }
+			if (!isLogin) {
+				url = "http://localhost:3001/user/login";
+				formData.name = name;
+				formData.phoneNo = phoneNo;
+			}
+			const res = await fetch(url, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(formData),
+			});
 
+			const data = await res.json();
+			if (res.ok) {
+				if (isLogin) {
+					alert("User successfully logged in");
+				} else {
+					alert("User registered");
+					setIsLogin(true);
+				}
+				setName("");
+				setEmail("");
+				setPassword("");
+				setPhoneNo("");
+			} else {
+				alert(data.message);
+			}
+		} catch (err) {
+			console.error(err.message);
+		}
 	};
 
 	return (
 		<>
+			<h1>{!isLogin ? "Sign Up Page" : "Login Page"}</h1>
 			<form onSubmit={handleSubmit}>
-				<label htmlFor="name">Enter name</label>
-				<input
-					id="name"
-					name="name"
-					value={name}
-					onChange={(e) => setName(e.target.value)}
-					type="text"
-					required
-				/>
+				{!isLogin && (
+					<>
+						<label htmlFor="name">Enter name</label>
+						<input
+							id="name"
+							name="name"
+							value={name}
+							onChange={(e) => setName(e.target.value)}
+							type="text"
+							required
+						/>
 				<br />
 				<br />
+					</>
+				)}
 				<label htmlFor="email">Enter email</label>
 				<input
 					id="email"
@@ -55,18 +79,22 @@ const Signup = () => {
 				/>
 				<br />
 				<br />
-				<label htmlFor="phone">Enter phone number</label>
-				<input
-					id="phone"
-					name="phone"
-					value={phoneNo}
-					onChange={(e) => setPhoneNo(e.target.value)}
-					type="tel"
-					pattern="[0-9]{10}"
-					required
-				/>
+				{!isLogin && (
+					<>
+						<label htmlFor="phone">Enter phone number</label>
+						<input
+							id="phone"
+							name="phone"
+							value={phoneNo}
+							onChange={(e) => setPhoneNo(e.target.value)}
+							type="tel"
+							pattern="[0-9]{10}"
+							required
+						/>
 				<br />
 				<br />
+					</>
+				)}
 				<label htmlFor="password">Enter password</label>
 				<input
 					id="password"
@@ -78,7 +106,17 @@ const Signup = () => {
 				/>
 				<br />
 				<br />
-				<button>Submit</button>
+				<button type="submit">Submit</button>
+				<br />
+				<br />
+				<button
+					type="button"
+					onClick={() => setIsLogin((prev) => !prev)}
+				>
+					{isLogin
+						? "New User ? Sign Up"
+						: "Already Registered? Sign In"}
+				</button>
 			</form>
 		</>
 	);
