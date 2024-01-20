@@ -10,14 +10,14 @@ const Signup = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			let url = "http://localhost:3001/user/signup";
+			let url = "http://localhost:3001/user/login";
 			const formData = {
 				email: email,
 				password: password,
 			};
 
 			if (!isLogin) {
-				url = "http://localhost:3001/user/login";
+				url = "http://localhost:3001/user/signup";
 				formData.name = name;
 				formData.phoneNo = phoneNo;
 			}
@@ -33,6 +33,7 @@ const Signup = () => {
 			if (res.ok) {
 				if (isLogin) {
 					alert("User successfully logged in");
+                    localStorage.setItem('user', data.token);
 				} else {
 					alert("User registered");
 					setIsLogin(true);
