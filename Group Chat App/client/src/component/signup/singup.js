@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
 	const [name, setName] = useState("");
@@ -6,6 +7,8 @@ const Signup = () => {
 	const [phoneNo, setPhoneNo] = useState("");
 	const [password, setPassword] = useState("");
 	const [isLogin, setIsLogin] = useState(false);
+
+    const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -34,6 +37,7 @@ const Signup = () => {
 				if (isLogin) {
 					alert("User successfully logged in");
                     localStorage.setItem('user', data.token);
+                    navigate('/chat')
 				} else {
 					alert("User registered");
 					setIsLogin(true);
