@@ -1,38 +1,92 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
+	const [message, setMessage] = useState("");
+	const [chats, setChats] = useState();
+	const navigate = useNavigate();
 
-    const [message, setMessage] = useState("");
+	useEffect(() => {
+		const fetchChat = async () => {
+			try {
+				const res = await fetch(
+					"http://localhost:3001/chat/get-message",
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: localStorage.getItem("user"),
+						},
+					}
+				);
+				const data = await res.json();
+				if (res.ok) {
+					setChats(data);
+				}
+			} catch (err) {
+				console.error(err);
+			}
+		};
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        // alert(message)
-        try {
-            const res = await fetch('http://localhost:3001/chat/post-message', {
-                method : "POST",
-                headers : {
-                    "Content-Type": "application/json",
-                    Authorization : localStorage.getItem('user'),
-                },
-                body : JSON.stringify({message}),
-            })
-            if(res.ok) {
-                alert('sent')
-            }else {
-                throw new Error('something went wrong')
-            }
-        }catch(err) {
-            console.error(err.message)
-        }
-    }
+		fetchChat();
+	}, []);
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		// alert(message)
+		try {
+			const res = await fetch("http://localhost:3001/chat/post-message", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: localStorage.getItem("user"),
+				},
+				body: JSON.stringify({ message }),
+			});
+			const data = await res.json();
+			if (res.ok) {
+				
+				// setChats((prevChat) => {
+				// 	return { ...prevChat, data };
+				// });
+                // console.log(chats);
+			} else {
+				throw new Error("something went wrong");
+			}
+            setMessage("");
+		} catch (err) {
+			console.error(err.message);
+		}
+	};
+	const handleLogout = () => {
+		localStorage.removeItem("user");
+		navigate("/");
+	};
 
 	return (
 		<>
 			<h1>Chat App</h1>
-            <form onSubmit={handleSubmit}>
-                <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="enter your message"/>
-                <button type="submit">Send</button>
-            </form>
+			<button onClick={handleLogout}>Logout</button>
+			<br />
+			<br />
+			<br />
+           {/* {console.log(chats)} */}
+			{chats &&
+				chats.map((chat) => {
+					return (
+						<li key={chat.id}>
+							{chat.name} {chat.message}
+						</li>
+					);
+				})}
+			<form onSubmit={handleSubmit}>
+				<input
+					type="text"
+					value={message}
+					onChange={(e) => setMessage(e.target.value)}
+					placeholder="enter your message"
+				/>
+				<button type="submit">Send</button>
+			</form>
 		</>
 	);
 };
