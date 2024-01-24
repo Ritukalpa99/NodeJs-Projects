@@ -6,6 +6,8 @@ const PORT = 3001;
 
 const userRoutes = require("./routes/user");
 const chatRoutes = require('./routes/chat')
+const groupRoutes = require('./routes/group');
+
 const sequelize = require("./util/database");
 
 const User = require('./model/user');
@@ -18,6 +20,7 @@ app.use(cors());
 
 app.use("/user", userRoutes);
 app.use("/chat", chatRoutes)
+app.use(groupRoutes)
 
 User.hasMany(Chat);
 Chat.belongsTo(User);

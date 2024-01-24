@@ -1,5 +1,5 @@
 import GroupChat from "./groupChat";
-import GroupList from "./groupList/groupList";
+import GroupList from "./groupList";
 import UserList from "./userList";
 import { useState, useEffect } from "react";
 
