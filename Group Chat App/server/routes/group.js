@@ -9,4 +9,8 @@ router.post('/create-group', userAuthentication.authenticate, groupController.cr
 
 router.get('/get-groups', userAuthentication.authenticate, groupController.getGroups);
 
+router.get('/get-users/:gId', userAuthentication.authenticate, groupController.getUsers)
+
+router.delete('/delete-group/:gId', userAuthentication.authenticate, groupController.deleteGroup)
+
 module.exports = router

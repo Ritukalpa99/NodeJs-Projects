@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use("/user", userRoutes);
-app.use("/chat", chatRoutes)
+app.use(chatRoutes)
 app.use(groupRoutes)
 
 User.hasMany(Chat);
