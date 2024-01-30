@@ -3,9 +3,9 @@ import GroupList from "./groupList";
 import UserList from "./userList";
 import { useState, useEffect } from "react";
 
-const MainSection = ({ onCreateGroup, onGroupChange }) => {
+const MainSection = () => {
 	const [currentGroup, setCurrentGroup] = useState(1); // change to null
-
+	
 	useEffect(() => {
 		const groupId = localStorage.getItem("groupId");
 		if (groupId) {
@@ -13,19 +13,9 @@ const MainSection = ({ onCreateGroup, onGroupChange }) => {
 		}
 	}, []);
 
-	const handleCreateGroup = (name) => {};
-
-	const handleGroupChange = (groupId) => {
-		onGroupChange(groupId);
-		localStorage.setItem("groupId", groupId);
-	};
-
 	return (
 		<section>
-			<GroupList
-				onCreateGroup={handleCreateGroup}
-				onGroupChange={handleGroupChange}
-			/>
+			<GroupList/>
 			{currentGroup && (
 				<>
 					<GroupChat groupId={currentGroup} />

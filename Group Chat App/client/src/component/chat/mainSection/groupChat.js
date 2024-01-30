@@ -5,19 +5,23 @@ const GroupChat = () => {
 		JSON.parse(localStorage.getItem("localMsg")) || []
 	); // Might have errors for how we're init localMsg
 	const [message, setMessage] = useState("");
-	const [lastId, setLastId] = useState(0);
 	const groupId = localStorage.getItem("groupId");
     
 
     useEffect(() => {
-        if(localMsg.length === 0) {
-            setLastId(0);
-        }else {
-            setLastId(localMsg[localMsg.length - 1].id);
+		let lastId = 0;
+        if(localMsg.length !== 0) {
+			lastId = localMsg[localMsg.length - 1].id;
         }
         const fetchMessages = async () => {
             if(localStorage.getItem('groupId') !== null) {
-                const res = await fetch(`http://localhost:3001/get-message?id=${lastId}&gId=${groupId}`);
+                const res = await fetch(`http://localhost:3001/get-message?id=${lastId}&gId=${groupId}`,{
+                    method : "GET",
+                    headers : {
+                        "Content-Type" : "application/json",
+                        Authorization : localStorage.getItem("user"),
+                    }
+                });
                 const data = await res.json();
                 if(res.ok) {
                     let retrievedMsg =  localMsg.concat(data.chat);
@@ -32,7 +36,7 @@ const GroupChat = () => {
             }
         }
         fetchMessages();
-    },[groupId,lastId, localMsg])
+    },[groupId, localMsg.length])
 
 	const handleSendGroupMsg = async (e) => {
 		e.preventDefault();
@@ -79,7 +83,7 @@ const GroupChat = () => {
 					value={message}
 					onChange={(e) => setMessage(e.target.value)}
 				/>
-				<button type="submiy">Send</button>
+				<button type="submit">Send</button>
 			</form>
 		</div>
 	);

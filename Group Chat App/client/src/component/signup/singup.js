@@ -37,6 +37,10 @@ const Signup = () => {
 				if (isLogin) {
 					alert("User successfully logged in");
                     localStorage.setItem('user', data.token);
+					localStorage.setItem('username', data.username);
+					localStorage.setItem('userId', data.userId);
+					localStorage.setItem('localMsg', []);
+					localStorage.setItem('lastId', 0);
                     navigate('/chat')
 				} else {
 					alert("User registered");

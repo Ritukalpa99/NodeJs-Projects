@@ -26,6 +26,16 @@ exports.getGroups = async (req, res) => {
 	}
 };
 
+exports.getGroupById = async (req,res) => {
+	try {
+		const gId = req.params.gId;
+		const group = await req.user.getGroups({attributes : ["id","name"], where : {id : gId}});
+		res.status(200).json({success :true, group});
+	}catch(err) {
+		res.status(500).json({ message: "server error" });
+	}
+}
+
 exports.getUsers = async (req, res) => {
 	try {
 		// const gId = req.query.gId;

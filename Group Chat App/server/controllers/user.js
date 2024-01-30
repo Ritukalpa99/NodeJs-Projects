@@ -14,8 +14,8 @@ exports.createUser = async (req, res) => {
 		const { email, password, name, phoneNo } = req.body;
 
 		const isUser = await User.findAll({ where: { email: email } });
-
-		if (isUser) {
+		console.log(isUser);
+		if (isUser.length !== 0) {
 			return res
 				.status(400)
 				.json({ success: false, message: "User already exists" });
@@ -58,6 +58,8 @@ exports.authenticateUser = async (req, res) => {
 			success: true,
 			message: "User logged in successfully",
 			token: generateAccessToken(user.id),
+			username : user.name,
+			userId : user.id,
 		});
 	} catch (err) {
 		res.status(500).json({ error: err.message });

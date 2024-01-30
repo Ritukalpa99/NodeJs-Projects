@@ -5,8 +5,10 @@ exports.getMessage = async (req, res) => {
 	try {
 		const lastId = req.query.id;
 		const gId = req.query.gId;
+		// console.log(lastId);
 		const chat = await Chat.findAll({
-			where: { id: { [Op.gt]: lastId }, groupdId: gId },
+			attributes : ['id','username','message','userId','groupId'],
+			where: { id: { [Op.gt]: lastId }, groupId: gId },
 		});
 		res.status(200).json({ success: true, chat });
 	} catch (err) {
@@ -16,8 +18,8 @@ exports.getMessage = async (req, res) => {
 
 exports.postMessage = async (req, res) => {
 	try {
-		const { message, username, groupdId } = req.body;
-		const chat = await req.user.createChat({ message, username, groupdId });
+		const { message, username, groupId } = req.body;
+		const chat = await req.user.createChat({ message, username, groupId });
 		res.status(201).json({
 			success: true,
 			message: "Group message sent",

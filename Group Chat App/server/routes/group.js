@@ -9,6 +9,8 @@ router.post('/create-group', userAuthentication.authenticate, groupController.cr
 
 router.get('/get-groups', userAuthentication.authenticate, groupController.getGroups);
 
+router.get('/get-group-by-id/:gId', userAuthentication.authenticate,groupController.getGroupById);
+
 router.get('/get-users/:gId', userAuthentication.authenticate, groupController.getUsers)
 
 router.delete('/delete-group/:gId', userAuthentication.authenticate, groupController.deleteGroup)

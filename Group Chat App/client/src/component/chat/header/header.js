@@ -1,6 +1,16 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
+const Header = () => {
+  const [username] = useState(localStorage.getItem('username'));
+  const [currentGroup] = useState((localStorage.getItem('groupName')) || "Select a Group");
+  const navigate = useNavigate();
 
-const Header = ({username, currentGroup, onLogout}) => {
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/');
+  }
+
     return (
         <section>
             <div>
@@ -12,7 +22,7 @@ const Header = ({username, currentGroup, onLogout}) => {
         <span>{currentGroup}</span>
       </div>
       <div>
-        <button onClick={onLogout}>Logout</button>
+        <button onClick={handleLogout}>Logout</button>
       </div>
         </section>
     )

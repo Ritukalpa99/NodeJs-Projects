@@ -35,7 +35,7 @@ const GroupList = () => {
 			},
 		});
 		const data = await res.json();
-		if(res.ok) {
+		if (res.ok) {
 			// console.log(data);
 			setUsers(data);
 		}
@@ -43,22 +43,43 @@ const GroupList = () => {
 
 	const handleDeleteGroup = async (gId) => {
 		// alert("deleting group");
-		if(window.confirm("are you sure?")) {
-			const res = await fetch(`http://localhost:3001/get-users/${gId}`, {
-				method : "DELETE", 
-				headers : {
-					"Content-Type" : "application/json",
-					Authorization :localStorage.getItem("user"),
-				}
-			})
-			if(res.ok) {
-
+		if (window.confirm("are you sure?")) {
+			const res = await fetch(`http://localhost:3001/delete-group/${gId}`, {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: localStorage.getItem("user"),
+				},
+			});
+			if (res.ok) {
 			}
 		}
 	};
 
-	const handleEnterChat = () => {
-		alert("Entering chat");
+	const handleEnterChat = async (gId) => {
+		try {
+			const res = await fetch(
+				`http://localhost:3001/get-group-by-id/${gId}`,
+				{
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: localStorage.getItem("user"),
+					},
+				}
+			);
+			const data = await res.json();
+			if (res.ok) {
+				console.log(data.group[0]);
+				// setUsers(data);
+				localStorage.setItem("groupId", data.group[0].id);
+				localStorage.setItem("groupName", data.group[0].name);
+				localStorage.setItem("localMsg", "[]");
+				window.location.reload(true);
+			}
+		} catch (err) {
+			console.log(err);
+		}
 	};
 	const handleCreateGroup = async (e) => {
 		e.preventDefault();
@@ -109,20 +130,27 @@ const GroupList = () => {
 						<button onClick={() => handleDeleteGroup(group.id)}>
 							Delete Group
 						</button>
-					</li>								
+					</li>
 				);
 			})}
-			<hr/>
+			<hr />
 			{users.map((user) => {
-				return  <li key={user.groups[0].id}>
-					<span>{user.groups[0].userGroup.userId}</span>
-					<span>{user.name}</span>
-					<span>{user.email}</span>
-					<span>{String(user.groups[0].userGroup.isAdmin) === 'true' ? "Admin" : "Participant"}</span>
-					<button>Remove</button>
-					{user.groups[0].userGroup.isAdmin !== true ?<button>Make Admin</button> : null}
-					
-				</li>
+				return (
+					<li key={user.groups[0].id}>
+						<span>{user.groups[0].userGroup.userId}</span>
+						<span>{user.name}</span>
+						<span>{user.email}</span>
+						<span>
+							{String(user.groups[0].userGroup.isAdmin) === "true"
+								? "Admin"
+								: "Participant"}
+						</span>
+						<button>Remove</button>
+						{user.groups[0].userGroup.isAdmin !== true ? (
+							<button>Make Admin</button>
+						) : null}
+					</li>
+				);
 			})}
 		</div>
 	);
