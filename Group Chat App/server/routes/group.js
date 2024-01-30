@@ -1,18 +1,50 @@
-const express = require('express');
+const express = require("express");
 
 const router = express.Router();
-const userAuthentication = require('../middleware/auth');
+const userAuthentication = require("../middleware/auth");
 
-const groupController = require('../controllers/group');
+const groupController = require("../controllers/group");
 
-router.post('/create-group', userAuthentication.authenticate, groupController.createGroup);
+router.post(
+	"/create-group",
+	userAuthentication.authenticate,
+	groupController.createGroup
+);
 
-router.get('/get-groups', userAuthentication.authenticate, groupController.getGroups);
+router.post(
+	"/make-admin",
+	userAuthentication.authenticate,
+	groupController.makeAdmin
+);
 
-router.get('/get-group-by-id/:gId', userAuthentication.authenticate,groupController.getGroupById);
+router.post(
+	"/delete-user",
+	userAuthentication.authenticate,
+	groupController.deleteUser
+);
 
-router.get('/get-users/:gId', userAuthentication.authenticate, groupController.getUsers)
+router.get(
+	"/get-groups",
+	userAuthentication.authenticate,
+	groupController.getGroups
+);
 
-router.delete('/delete-group/:gId', userAuthentication.authenticate, groupController.deleteGroup)
+router.get(
+	"/get-group-by-id/:gId",
+	userAuthentication.authenticate,
+	groupController.getGroupById
+);
 
-module.exports = router
+router.get(
+	"/get-users/:gId",
+	userAuthentication.authenticate,
+	groupController.getUsers
+);
+
+router.delete(
+	"/delete-group/:gId",
+	userAuthentication.authenticate,
+	groupController.deleteGroup
+);
+
+module.exports = router;

@@ -2,18 +2,59 @@ const Group = require("../model/group");
 const UserGroup = require("../model/usergroup");
 const User = require("../model/user");
 const Chat = require("../model/chat");
+const e = require("express");
 
 exports.createGroup = async (req, res) => {
 	try {
 		const { name, isAdmin } = req.body;
 		const group = await req.user.createGroup({ name });
-		const groupUser = await UserGroup.update(
-			{ isAdmin },
-			{ where: { groupId: group.id } }
-		);
+		await UserGroup.update({ isAdmin }, { where: { groupId: group.id } });
 		res.status(201).json({ message: "created successfully", group });
 	} catch (err) {
 		res.status(500).json({ message: "server error" });
+	}
+};
+
+exports.makeAdmin = async (req, res) => {
+	try {
+		const { email, gId } = req.body;
+		console.log(`${email}, ${gId}`);
+		const user = await User.findOne({ where: { email: email } });
+		await UserGroup.update(
+			{ isAdmin: true },
+			{ where: { userId: user.id, groupId: gId } }
+		);
+		res.status(200).json({ message: "user is now admin" });
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ message: err });
+	}
+};
+
+exports.deleteUser = async (req, res) => {
+	try {
+		const { email, gId } = req.body;
+		const adminCheck = await UserGroup.findOne({
+			where: { userId: req.user.id, groupId: gId },
+		});
+		if (adminCheck === false) {
+			return res.status(400).json({ message: "You are not an admin" });
+		}
+		const userToRemove = await User.findOne({ where: { email } });
+		const result = await UserGroup.destroy({
+			where: { userId: userToRemove.id, groupId: gId },
+		});
+		if (result == 0)
+			return res
+				.status(404)
+				.json({ message: "User not present in the group" });
+		res.status(200).json({
+			success: true,
+			message: "User removed from the group",
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ success: false, message: err });
 	}
 };
 
@@ -26,15 +67,18 @@ exports.getGroups = async (req, res) => {
 	}
 };
 
-exports.getGroupById = async (req,res) => {
+exports.getGroupById = async (req, res) => {
 	try {
 		const gId = req.params.gId;
-		const group = await req.user.getGroups({attributes : ["id","name"], where : {id : gId}});
-		res.status(200).json({success :true, group});
-	}catch(err) {
+		const group = await req.user.getGroups({
+			attributes: ["id", "name"],
+			where: { id: gId },
+		});
+		res.status(200).json({ success: true, group });
+	} catch (err) {
 		res.status(500).json({ message: "server error" });
 	}
-}
+};
 
 exports.getUsers = async (req, res) => {
 	try {

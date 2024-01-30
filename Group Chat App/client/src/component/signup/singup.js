@@ -39,8 +39,8 @@ const Signup = () => {
                     localStorage.setItem('user', data.token);
 					localStorage.setItem('username', data.username);
 					localStorage.setItem('userId', data.userId);
-					localStorage.setItem('localMsg', []);
-					localStorage.setItem('lastId', 0);
+					// localStorage.setItem('localMsg', []);
+					// localStorage.setItem('lastId', "0");
                     navigate('/chat')
 				} else {
 					alert("User registered");

@@ -44,14 +44,18 @@ const GroupList = () => {
 	const handleDeleteGroup = async (gId) => {
 		// alert("deleting group");
 		if (window.confirm("are you sure?")) {
-			const res = await fetch(`http://localhost:3001/delete-group/${gId}`, {
-				method: "DELETE",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: localStorage.getItem("user"),
-				},
-			});
-			if (res.ok) {
+			try {
+				await fetch(`http://localhost:3001/delete-group/${gId}`, {
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: localStorage.getItem("user"),
+					},
+				});
+				
+
+			}catch(err) {
+				console.log(err)
 			}
 		}
 	};
@@ -81,6 +85,47 @@ const GroupList = () => {
 			console.log(err);
 		}
 	};
+
+	const handleMakeAdmin = async (email,gId) => {
+		try {
+			const res = await fetch("http://localhost:3001/make-admin", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: localStorage.getItem("user"),
+				},
+				body: JSON.stringify({email,gId}),
+			});
+			const data = await res.json();
+			if(res.ok) {
+				alert(`${email} ${data.message}`);
+			}
+		}catch(err) {
+			console.log(err)
+		}
+	}
+
+	const handleRemoveUser = async(email,gId) => {
+		if(window.confirm(`Are you user you want to remove ${email}`)) {
+			try {
+				const res = await fetch("http://localhost:3001/delete-user", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: localStorage.getItem("user"),
+					},
+					body: JSON.stringify({email,gId}),
+				});
+				const data = await res.json();
+				if(res.ok) {
+					alert(`${email} ${data.message}`);
+				}
+			}catch(err) {
+				console.log(err)
+			}
+		}
+	}
+
 	const handleCreateGroup = async (e) => {
 		e.preventDefault();
 
@@ -145,9 +190,10 @@ const GroupList = () => {
 								? "Admin"
 								: "Participant"}
 						</span>
-						<button>Remove</button>
-						{user.groups[0].userGroup.isAdmin !== true ? (
-							<button>Make Admin</button>
+						<button onClick={() => handleRemoveUser(user.email,user.groups[0].id )}>Remove</button>
+						{/* change !== false to !== true */}
+						{user.groups[0].userGroup.isAdmin !== false ? (
+							<button onClick={() => handleMakeAdmin(user.email,user.groups[0].id )}>Make Admin</button>
 						) : null}
 					</li>
 				);

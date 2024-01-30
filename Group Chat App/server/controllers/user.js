@@ -14,7 +14,7 @@ exports.createUser = async (req, res) => {
 		const { email, password, name, phoneNo } = req.body;
 
 		const isUser = await User.findAll({ where: { email: email } });
-		console.log(isUser);
+		// console.log(isUser);
 		if (isUser.length !== 0) {
 			return res
 				.status(400)
@@ -29,7 +29,8 @@ exports.createUser = async (req, res) => {
 		});
 		res.json(user);
 	} catch (err) {
-		res.status(500).json({ error: err.message });
+		console.log(err)
+		res.status(500).json({ error: err });
 	}
 };
 
