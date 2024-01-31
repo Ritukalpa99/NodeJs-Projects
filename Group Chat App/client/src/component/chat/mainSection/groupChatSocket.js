@@ -6,16 +6,40 @@ const GroupChatSocket = () => {
 	const [messageReceived, setMessageReceived] = useState([]);
 
 	const socket = io("http://localhost:3333");
-	useEffect(() => {
-        console.log('i fire once');
-		socket.on("message", (newMessage) => {
-			console.log(newMessage);
-			setMessageReceived((prev) => {
-				return [...prev, newMessage];
-			});
-		});
+	// useEffect(() => {
+    //     console.log('i fire once');
+	// 	socket.on("message", (newMessage) => {
+	// 		console.log(newMessage);
+	// 		setMessageReceived((prev) => {
+	// 			return [...prev, newMessage];
+	// 		});
+	// 	});
 		
-	}, []);
+	// }, []);
+
+//      useEffect(() => {
+//     const handleReceive = async (data) => {
+//       try {
+//         if (groupId === data) {
+//           const newMessages = await axios.get(`/new-messages/?groupId=${groupId}&lastMsgId=${lastMsgId}`);
+//           setLastMsgId(newMessages.data[newMessages.data.length - 1].id);
+//           newMessages.data.forEach((elem) => {
+//             display(elem);
+//           });
+//         }
+//       } catch (err) {
+//         alert('something went wrong!!!');
+//       }
+//     };
+
+//     // Subscribe to socket event
+//     socket.on('receive', handleReceive);
+
+//     // Clean up socket subscription on component unmount
+//     return () => {
+//       socket.off('receive', handleReceive);
+//     };
+//   }, [groupId, lastMsgId]);
 
 	const handleSendGroupMsg = async (e) => {
 		e.preventDefault();

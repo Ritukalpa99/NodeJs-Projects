@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import io from "socket.io-client";
+import "./mainSection.css";
 
 const GroupChat = () => {
 	const [localMsg, setLocalMsg] = useState(
@@ -7,14 +9,16 @@ const GroupChat = () => {
 	const [message, setMessage] = useState("");
 	const groupId = localStorage.getItem("groupId");
 	const [file, setFile] = useState(null);
+	const socket = io("http://localhost:3333");
+
 
 	useEffect(() => {
 		let lastId = 0;
 		if (localMsg.length !== 0) {
 			lastId = localMsg[localMsg.length - 1].id;
 		}
-		const fetchMessages = async () => {
-			if (localStorage.getItem("groupId") !== null) {
+		const fetchMessages = async (data) => {
+			if (localStorage.getItem("groupId") === data) {
 				const res = await fetch(
 					`http://localhost:3001/get-message?id=${lastId}&gId=${groupId}`,
 					{
@@ -43,18 +47,22 @@ const GroupChat = () => {
 				}
 			}
 		};
-		fetchMessages();
-	}, [groupId, localMsg.length]);
+		// fetchMessages();
+		socket.on('receive', fetchMessages);
+	}, [localMsg,socket,groupId]);
+
+
 
 	const handleSendGroupMsg = async (e) => {
 		e.preventDefault();
 		if (localStorage.getItem("groupId") === null) {
 			alert("Select a group first");
 		} else {
+			const groupId = localStorage.getItem("groupId")
 			const obj = {
 				message,
 				username: localStorage.getItem("username"),
-				groupId: localStorage.getItem("groupId"),
+				groupId: groupId,
 			};
 			try {
 				await fetch("http://localhost:3001/post-message", {
@@ -65,6 +73,7 @@ const GroupChat = () => {
 					},
 					body: JSON.stringify(obj),
 				});
+				socket.emit('send-message', (groupId))
 			} catch (err) {
 				console.log(err);
 			}
@@ -104,7 +113,7 @@ const GroupChat = () => {
 	};
 
 	return (
-		<div>
+		<div className="group-chat-container">
 			<h2>Group Chat</h2>
 			<div className="message-container">
 				{localMsg.map((chat) => (

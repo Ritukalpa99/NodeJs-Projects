@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import "./mainSection.css"
 const GroupList = () => {
 	const [groups, setGroups] = useState([]);
 	const [newGroupName, setNewGroupName] = useState("");
@@ -149,7 +149,7 @@ const GroupList = () => {
 		} catch (err) {}
 	};
 	return (
-		<div>
+		<div className="group-list-container">
 			<form onSubmit={handleCreateGroup} className="create-group">
 				<input
 					type="text"
