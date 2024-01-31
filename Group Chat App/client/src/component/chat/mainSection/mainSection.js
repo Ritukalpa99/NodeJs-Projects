@@ -19,8 +19,8 @@ const MainSection = () => {
 			<GroupList/>
 			{currentGroup && (
 				<>
-					{/* <GroupChat groupId={currentGroup} /> */}
-					<GroupChatSocket />
+					<GroupChat />
+					{/* <GroupChatSocket /> */}
 					<UserList groupId={currentGroup} />
 				</>
 			)}
