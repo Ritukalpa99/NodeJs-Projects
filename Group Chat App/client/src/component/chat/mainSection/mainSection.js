@@ -1,4 +1,5 @@
 import GroupChat from "./groupChat";
+import GroupChatSocket from "./groupChatSocket";
 import GroupList from "./groupList";
 import UserList from "./userList";
 import { useState, useEffect } from "react";
@@ -18,7 +19,8 @@ const MainSection = () => {
 			<GroupList/>
 			{currentGroup && (
 				<>
-					<GroupChat groupId={currentGroup} />
+					{/* <GroupChat groupId={currentGroup} /> */}
+					<GroupChatSocket />
 					<UserList groupId={currentGroup} />
 				</>
 			)}
