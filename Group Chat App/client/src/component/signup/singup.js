@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import "./singup.css"
 const Signup = () => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
@@ -60,7 +60,10 @@ const Signup = () => {
 
 	return (
 		<>
-			<h1>{!isLogin ? "Sign Up Page" : "Login Page"}</h1>
+			<div className="auth-form">
+			<h1 className="heading">{!isLogin ? "Sign Up Page" : "Login Page"}</h1>
+
+			
 			<form onSubmit={handleSubmit}>
 				{!isLogin && (
 					<>
@@ -115,10 +118,11 @@ const Signup = () => {
 				/>
 				<br />
 				<br />
-				<button type="submit">Submit</button>
+				<button className="btn login-signup" type="submit">Submit</button>
 				<br />
 				<br />
 				<button
+					className="btn toggle-btn"
 					type="button"
 					onClick={() => setIsLogin((prev) => !prev)}
 				>
@@ -127,6 +131,7 @@ const Signup = () => {
 						: "Already Registered? Sign In"}
 				</button>
 			</form>
+			</div>
 		</>
 	);
 };

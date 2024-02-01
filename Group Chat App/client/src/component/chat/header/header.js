@@ -22,7 +22,7 @@ const Header = () => {
         <span>{currentGroup}</span>
       </div>
       <div>
-        <button onClick={handleLogout}>Logout</button>
+        <button className="btn danger logout" onClick={handleLogout}>Logout</button>
       </div>
         </section>
     )

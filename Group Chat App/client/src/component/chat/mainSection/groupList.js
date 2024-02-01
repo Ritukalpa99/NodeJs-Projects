@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./mainSection.css"
+import "./mainSection.css";
 const GroupList = () => {
 	const [groups, setGroups] = useState([]);
 	const [newGroupName, setNewGroupName] = useState("");
@@ -27,6 +27,7 @@ const GroupList = () => {
 	}, []);
 
 	const handleShowUser = async (gId) => {
+		setUsers([]);
 		const res = await fetch(`http://localhost:3001/get-users/?gId=${gId}`, {
 			method: "GET",
 			headers: {
@@ -45,17 +46,23 @@ const GroupList = () => {
 		// alert("deleting group");
 		if (window.confirm("are you sure?")) {
 			try {
-				await fetch(`http://localhost:3001/delete-group/${gId}`, {
-					method: "DELETE",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: localStorage.getItem("user"),
-					},
-				});
-				
-
-			}catch(err) {
-				console.log(err)
+				const res = await fetch(
+					`http://localhost:3001/delete-group/${gId}`,
+					{
+						method: "DELETE",
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: localStorage.getItem("user"),
+						},
+					}
+				);
+				const data = await res.json();
+				if (res.ok) {
+					alert(data.message);
+					window.location.reload();
+				}
+			} catch (err) {
+				console.log(err);
 			}
 		}
 	};
@@ -86,7 +93,7 @@ const GroupList = () => {
 		}
 	};
 
-	const handleMakeAdmin = async (email,gId) => {
+	const handleMakeAdmin = async (email, gId) => {
 		try {
 			const res = await fetch("http://localhost:3001/make-admin", {
 				method: "POST",
@@ -94,19 +101,22 @@ const GroupList = () => {
 					"Content-Type": "application/json",
 					Authorization: localStorage.getItem("user"),
 				},
-				body: JSON.stringify({email,gId}),
+				body: JSON.stringify({ email, gId }),
 			});
 			const data = await res.json();
-			if(res.ok) {
+			if (res.ok) {
 				alert(`${email} ${data.message}`);
+				window.location.reload();
+			} else {
+				throw new Error(data.message);
 			}
-		}catch(err) {
-			console.log(err)
+		} catch (err) {
+			alert(err.message)
 		}
-	}
+	};
 
-	const handleRemoveUser = async(email,gId) => {
-		if(window.confirm(`Are you user you want to remove ${email}`)) {
+	const handleRemoveUser = async (email, gId) => {
+		if (window.confirm(`Are you user you want to remove ${email}`)) {
 			try {
 				const res = await fetch("http://localhost:3001/delete-user", {
 					method: "POST",
@@ -114,17 +124,20 @@ const GroupList = () => {
 						"Content-Type": "application/json",
 						Authorization: localStorage.getItem("user"),
 					},
-					body: JSON.stringify({email,gId}),
+					body: JSON.stringify({ email, gId }),
 				});
 				const data = await res.json();
-				if(res.ok) {
+				if (res.ok) {
 					alert(`${email} ${data.message}`);
+					window.location.reload();
+				} else {
+					throw new Error(data.message)
 				}
-			}catch(err) {
-				console.log(err)
+			} catch (err) {
+				alert(err.message)
 			}
 		}
-	}
+	};
 
 	const handleCreateGroup = async (e) => {
 		e.preventDefault();
@@ -146,16 +159,16 @@ const GroupList = () => {
 				const groupId = data.group.id;
 				localStorage.setItem("groupId", groupId);
 			}
+			setNewGroupName("");
 		} catch (err) {}
 	};
 	return (
 		<div className="group-list-container">
-			<form onSubmit={handleCreateGroup} className="create-group">
+			<form onSubmit={handleCreateGroup}>
 				<input
 					type="text"
 					value={newGroupName}
 					onChange={(e) => setNewGroupName(e.target.value)}
-					className="create-group-input"
 					placeholder="Enter group name"
 					required
 				/>
@@ -166,13 +179,22 @@ const GroupList = () => {
 				return (
 					<li key={group.id}>
 						<span>{group.name}</span>
-						<button onClick={() => handleShowUser(group.id)}>
-							Show Users {group.id}
+						<button
+							className="btn show-user-btn"
+							onClick={() => handleShowUser(group.id)}
+						>
+							Show Users
 						</button>
-						<button onClick={() => handleEnterChat(group.id)}>
+						<button
+							className="btn enter-chat-btn"
+							onClick={() => handleEnterChat(group.id)}
+						>
 							Enter Chat
 						</button>
-						<button onClick={() => handleDeleteGroup(group.id)}>
+						<button
+							className="btn danger"
+							onClick={() => handleDeleteGroup(group.id)}
+						>
 							Delete Group
 						</button>
 					</li>
@@ -182,18 +204,33 @@ const GroupList = () => {
 			{users.map((user) => {
 				return (
 					<li key={user.groups[0].id}>
-						<span>{user.groups[0].userGroup.userId}</span>
-						<span>{user.name}</span>
-						<span>{user.email}</span>
-						<span>
+						<span className="userlist-span">{user.name}</span>
+						<span className="userlist-span">{user.email}</span>
+						<span className="userlist-span">
 							{String(user.groups[0].userGroup.isAdmin) === "true"
 								? "Admin"
 								: "Participant"}
 						</span>
-						<button onClick={() => handleRemoveUser(user.email,user.groups[0].id )}>Remove</button>
-						{/* change !== false to !== true */}
-						{user.groups[0].userGroup.isAdmin !== false ? (
-							<button onClick={() => handleMakeAdmin(user.email,user.groups[0].id )}>Make Admin</button>
+						<button
+							className="btn danger"
+							onClick={() =>
+								handleRemoveUser(user.email, user.groups[0].id)
+							}
+						>
+							Remove
+						</button>
+						{user.groups[0].userGroup.isAdmin !== true ? (
+							<button
+								className="btn admin-btn"
+								onClick={() =>
+									handleMakeAdmin(
+										user.email,
+										user.groups[0].id
+									)
+								}
+							>
+								Make Admin
+							</button>
 						) : null}
 					</li>
 				);

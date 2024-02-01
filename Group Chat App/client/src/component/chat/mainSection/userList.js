@@ -4,29 +4,29 @@ import "./mainSection.css";
 const UserList = () => {
 	const [userList, setUserList] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
-    const [isAdminCheck, setIsAdminCheck] = useState(false);
+	const [isAdminCheck, setIsAdminCheck] = useState(false);
 
 	useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const res = await fetch('http://localhost:3001/get-users', {
-                    method : "GET",
-                    headers : {
-                        "Content-Type": "application/json",
-					Authorization: localStorage.getItem("user"),
-                    }
-                })
-                const data = await res.json();
-                if(res.ok) {
-                    // console.log(data.user);
-                    setUserList(data.user)
-                }
-            }catch(err) {
-                console.log(err)
-            }
-        }
-        fetchUsers();
-    },[]);
+		const fetchUsers = async () => {
+			try {
+				const res = await fetch("http://localhost:3001/get-users", {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: localStorage.getItem("user"),
+					},
+				});
+				const data = await res.json();
+				if (res.ok) {
+					// console.log(data.user);
+					setUserList(data.user);
+				}
+			} catch (err) {
+				console.log(err);
+			}
+		};
+		fetchUsers();
+	}, []);
 
 	const handleAddingUser = async (user) => {
 		if (localStorage.getItem("groupId") == null) {
@@ -38,7 +38,7 @@ const UserList = () => {
 			isAdmin: isAdminCheck,
 		};
 		try {
-			await fetch(`http://localhost:3001/add-user`, {
+			const res = await fetch(`http://localhost:3001/add-user`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -46,7 +46,16 @@ const UserList = () => {
 				},
 				body: JSON.stringify(obj),
 			});
-		} catch (err) {}
+			const data = await res.json();
+			if (res.ok) {
+				alert(data.message);
+				window.location.reload();
+			} else {
+				throw new Error(data.message);
+			}
+		} catch (err) {
+			alert(err.message);
+		}
 	};
 	const filteresUsers = userList.filter(
 		(user) =>
@@ -57,10 +66,6 @@ const UserList = () => {
 	return (
 		<div className="user-list-container">
 			<h2> User List</h2>
-			<div>
-				<span>Name</span>
-				<span>Email</span>
-			</div>
 			<hr />
 			<input
 				type="search"
@@ -72,8 +77,13 @@ const UserList = () => {
 					<div key={user.id}>
 						<span>{user.name}</span>
 						<span>{user.email}</span>
-                        <input type="checkbox" checked={isAdminCheck} onChange={(e) => setIsAdminCheck(e.target.checked)}/>
-						<button onClick={() => handleAddingUser(user)}>
+						<span><abbr title="Select the checkbox the make the user admin">Admin</abbr></span>
+						<input
+							type="checkbox"
+							checked={isAdminCheck}
+							onChange={(e) => setIsAdminCheck(e.target.checked)}
+						/>
+						<button className="btn enter-chat-btn" onClick={() => handleAddingUser(user)}>
 							Add
 						</button>
 					</div>

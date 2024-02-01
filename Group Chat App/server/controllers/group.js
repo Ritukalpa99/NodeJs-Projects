@@ -18,7 +18,12 @@ exports.createGroup = async (req, res) => {
 exports.makeAdmin = async (req, res) => {
 	try {
 		const { email, gId } = req.body;
-		console.log(`${email}, ${gId}`);
+		const adminCheck = await UserGroup.findOne({
+			where: { userId: req.user.id, groupId: gId },
+		});
+		if (adminCheck.dataValues.isAdmin === false) {
+			return res.status(400).json({ message: "You don't have the permission to become admin" });
+		}
 		const user = await User.findOne({ where: { email: email } });
 		await UserGroup.update(
 			{ isAdmin: true },
@@ -37,7 +42,7 @@ exports.deleteUser = async (req, res) => {
 		const adminCheck = await UserGroup.findOne({
 			where: { userId: req.user.id, groupId: gId },
 		});
-		if (adminCheck === false) {
+		if (adminCheck.dataValues.isAdmin === false) {
 			return res.status(400).json({ message: "You are not an admin" });
 		}
 		const userToRemove = await User.findOne({ where: { email } });
@@ -134,10 +139,10 @@ exports.addUserToGroup = async (req, res) => {
 				{ where: { userId: userToAdd.id, groupId: groupId } }
 			);
 		}
-		res.status(201).json({ message: "added user to the group", userGroup });
+		res.status(201).json({ message: "Added user to the group", userGroup });
 	} catch (err) {
-		console.log(err);
-		res.status(404).json({ message: "user already in group" });
+		// console.log(err);
+		res.status(404).json({ message: "User already in group" });
 	}
 };
 

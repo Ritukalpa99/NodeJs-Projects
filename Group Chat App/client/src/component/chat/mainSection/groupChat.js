@@ -10,14 +10,13 @@ const GroupChat = () => {
 	const groupId = localStorage.getItem("groupId");
 	const [file, setFile] = useState(null);
 	const socket = io("http://localhost:3333");
- 
 
 	useEffect(() => {
 		let lastId = 0;
 		if (localMsg.length !== 0) {
 			lastId = localMsg[localMsg.length - 1].id;
 		}
-		console.log('inside normal useeffect');
+		console.log("inside normal useeffect");
 		const fetchMessages = async () => {
 			if (localStorage.getItem("groupId") != null) {
 				const res = await fetch(
@@ -33,27 +32,25 @@ const GroupChat = () => {
 				const data = await res.json();
 				if (res.ok) {
 					let retrievedMsg = localMsg.concat(data.chat);
-
-					if (retrievedMsg.length > 100) {
-						retrievedMsg = retrievedMsg.slice(
-							retrievedMsg.length - 100
-						);
-					}
-					localStorage.setItem(
-						"localMsg",
-						JSON.stringify(retrievedMsg)
-					);
-
+					// if (retrievedMsg.length > 100) {
+					// 	retrievedMsg = retrievedMsg.slice(
+					// 		retrievedMsg.length - 100
+					// 	);
+					// }
+					// localStorage.setItem(
+					// 	"localMsg",
+					// 	JSON.stringify(retrievedMsg)
+					// );
 					setLocalMsg(retrievedMsg);
 				}
 			}
 		};
 		fetchMessages();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	},[])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	useEffect(() => {
-		console.log('inside socket useffect');
+		console.log("inside socket useffect");
 		let lastId = 0;
 		if (localMsg.length !== 0) {
 			lastId = localMsg[localMsg.length - 1].id;
@@ -74,32 +71,19 @@ const GroupChat = () => {
 				if (res.ok) {
 					let retrievedMsg = localMsg.concat(data.chat);
 
-					if (retrievedMsg.length > 100) {
-						retrievedMsg = retrievedMsg.slice(
-							retrievedMsg.length - 100
-						);
-					}
-					localStorage.setItem(
-						"localMsg",
-						JSON.stringify(retrievedMsg)
-					);
-
 					setLocalMsg(retrievedMsg);
 				}
 			}
 		};
-		fetchMessages();
-		socket.on('receive', fetchMessages);
-	}, [localMsg,socket,groupId]);
-
-
+		socket.on("receive", fetchMessages);
+	}, [localMsg, socket, groupId]);
 
 	const handleSendGroupMsg = async (e) => {
 		e.preventDefault();
 		if (localStorage.getItem("groupId") === null) {
 			alert("Select a group first");
 		} else {
-			const groupId = localStorage.getItem("groupId")
+			const groupId = localStorage.getItem("groupId");
 			const obj = {
 				message,
 				username: localStorage.getItem("username"),
@@ -114,7 +98,8 @@ const GroupChat = () => {
 					},
 					body: JSON.stringify(obj),
 				});
-				socket.emit('send-message', (groupId))
+				setMessage("");
+				socket.emit("send-message", groupId);
 			} catch (err) {
 				console.log(err);
 			}
@@ -144,7 +129,9 @@ const GroupChat = () => {
 				const a = document.createElement("a");
 				a.href = data.fileURL;
 				a.download = "file";
+				a.target = "_blank";
 				a.click();
+				setFile(null);
 			} else {
 				throw new Error((await res.json()).message);
 			}
@@ -158,31 +145,40 @@ const GroupChat = () => {
 			<h2>Group Chat</h2>
 			<div className="message-container">
 				{localMsg.map((chat) => (
-					<div key={chat.id}>
+					<div className="chat-body" key={chat.id}>
 						<span>
-							<b>{chat.username}</b>
+							<strong>{chat.username}</strong>
 						</span>
 						<span>{chat.message}</span>
 					</div>
 				))}
 			</div>
-			<form onSubmit={handleSendGroupMsg}>
+			<form onSubmit={handleSendGroupMsg} className="send-container">
 				<input
 					type="text"
 					placeholder="type your message"
+					className="message-input"
 					value={message}
 					onChange={(e) => setMessage(e.target.value)}
 				/>
-				<button type="submit">Send</button>
+				<button className="send-btn" type="submit">
+					Send
+				</button>
 			</form>
-			<form encType="multipart/form-data" onSubmit={handleFileUpload}>
+			<form
+				className="upload-container"
+				encType="multipart/form-data"
+				onSubmit={handleFileUpload}
+			>
 				<input
 					type="file"
 					name="file"
 					onChange={(e) => setFile(e.target.files[0])}
 					required
 				/>
-				<button type="submit">Send File</button>
+				<button className="btn upload-container-btn" type="submit">
+					Send File
+				</button>
 			</form>
 		</div>
 	);

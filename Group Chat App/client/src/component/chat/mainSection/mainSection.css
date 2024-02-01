@@ -6,7 +6,7 @@
 }
 .group-list-container, .user-list-container, .group-chat-container{
     width: 500px;
-    background: skyblue;
+    background: #ADBC9F;
     border: none;
     outline: none;
     border-radius: 15px;
@@ -21,11 +21,16 @@
 .user-list-container{
     width: 400px;
 }
- 
+.user-list span {
+    margin: 5px;
+}
+.user-list abbr {
+    text-decoration: none;
+}
 .message-container{
     width: 80%;
     max-width: 1200px;
-    height: 40vh;
+    height: 50vh;
     margin: 0 auto;
     padding-bottom: 10px;
     overflow: hidden;
@@ -38,11 +43,92 @@
     width: 30%;
     border-radius: 0 15px 15px 0;
 }
-
+.message-container div strong{
+    color: #FF9843;
+}
 .message-container div:nth-child(2n){
     background-color: #fff;
     width: 30%;
     margin-left: auto;
     margin-right: 10px;
     border-radius: 15px 0 0 15px;
+}
+.message-container div:nth-child(2n) strong {
+    color:  #86A7FC;
+}
+.send-container {
+    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+}
+.message-input {
+    padding: 10px;
+    flex-grow: 1;
+    border: none;
+    border-radius: 15px 0 0 15px;
+    outline: none;
+}
+
+.upload-container {
+    background-color: white;
+    margin: 10px;
+    width: max-content;
+}
+.upload-container-btn {
+    color: white;
+    background-color: green;
+    border: none;
+}
+li {
+    list-style: none;
+}
+.userlist-span {
+    margin: 2px;
+    font-style: italic;
+    font-size: 12px;
+    font-weight: 500;
+}
+.chat-body span {
+    margin: 5px;
+}
+.send-btn{
+    background: #008400;
+    border: none;
+    color: white;
+    border-radius: 0 15px 15px 0;
+    cursor: pointer;
+}
+.btn {
+    cursor: pointer;
+    border-radius: 0.2em;
+    margin: 2px;
+    font-weight: bold;
+}
+.show-user-btn {
+    background-color: #80BCBD;
+    border-color: #80BCBD;
+}
+.admin-btn {
+    background-color: #86A7FC;
+    border-color: #86A7FC;
+
+}
+.enter-chat-btn {
+    background-color: #95CD41;
+    border-color: #95CD41;
+}
+.danger {
+    background-color: red;
+    color: black;
+    border-color: red;
+}
+
+.logout {
+    height: 30px;
+    width: 70px;
+    padding: 5px;
+}
+.logout:hover {
+    font-size: 17px;
 }

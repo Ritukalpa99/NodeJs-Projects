@@ -1,0 +1,39 @@
+
+.auth-form {
+    background-color: #C9B6E4;
+    width: 50vw;
+    min-height: 70vh;
+    margin-left: 20%;
+}
+.heading {
+    margin-top: 2em;
+    padding-top: 5%;
+}
+form * {
+    margin: 10px;
+}
+label {
+    font-size: large;
+}
+.btn {
+    cursor: pointer;
+    border-radius: 0.2em;
+    margin: 2px;
+    font-weight: bold;
+    
+}
+
+.login-signup {
+    background-color: #A0C3D2;
+    border-radius: 0.2em;
+    border-color: #A0C3D2;
+    font-size: large;
+    padding: 0.5em;
+}
+.toggle-btn {
+    background-color: #EA5455;
+    border-radius: 0.2em;
+    border-color: #EA5455;
+    font-size: large;
+    padding: 0.5em;
+}
