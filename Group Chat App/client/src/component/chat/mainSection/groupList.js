@@ -27,7 +27,7 @@ const GroupList = () => {
 	}, []);
 
 	const handleShowUser = async (gId) => {
-		const res = await fetch(`http://localhost:3001/get-users/${gId}`, {
+		const res = await fetch(`http://localhost:3001/get-users/?gId=${gId}`, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",

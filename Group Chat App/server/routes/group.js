@@ -23,6 +23,8 @@ router.post(
 	groupController.deleteUser
 );
 
+router.post('/add-user', userAuthentication.authenticate, groupController.addUserToGroup);
+
 router.get(
 	"/get-groups",
 	userAuthentication.authenticate,
@@ -36,7 +38,7 @@ router.get(
 );
 
 router.get(
-	"/get-users/:gId",
+	"/get-users",
 	userAuthentication.authenticate,
 	groupController.getUsers
 );

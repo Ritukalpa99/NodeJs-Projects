@@ -9,7 +9,6 @@ const MainSection = () => {
 	return (
 		<section className="main">
 			<GroupList />
-
 			<GroupChat />
 			<UserList />
 		</section>

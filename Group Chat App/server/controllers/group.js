@@ -2,7 +2,7 @@ const Group = require("../model/group");
 const UserGroup = require("../model/usergroup");
 const User = require("../model/user");
 const Chat = require("../model/chat");
-const e = require("express");
+const { Op } = require("sequelize");
 
 exports.createGroup = async (req, res) => {
 	try {
@@ -82,25 +82,62 @@ exports.getGroupById = async (req, res) => {
 
 exports.getUsers = async (req, res) => {
 	try {
-		// const gId = req.query.gId;
-		const gId = req.params.gId;
-		console.log(gId);
-		const userGroupRes = await UserGroup.findAll({
-			attributes: ["userId"],
-			where: { groupId: gId },
-		});
-		let userIdArray = [];
-		userGroupRes.forEach((id) => {
-			userIdArray.push(id.userId);
-		});
-		const userData = await User.findAll({
-			attributes: ["id", "name", "email"],
-			include: [{ model: Group, where: { id: gId } }],
-			where: { id: userIdArray },
-		});
-		res.status(200).json(userData);
+		const gId = req.query.gId;
+		// const gId = req.params.gId;
+		// console.log(gId);
+		if (gId != null) {
+			const userGroupRes = await UserGroup.findAll({
+				attributes: ["userId"],
+				where: { groupId: gId },
+			});
+			let userIdArray = [];
+			userGroupRes.forEach((id) => {
+				userIdArray.push(id.userId);
+			});
+			const userData = await User.findAll({
+				attributes: ["id", "name", "email"],
+				include: [{ model: Group, where: { id: gId } }],
+				where: { id: userIdArray },
+			});
+			res.status(200).json(userData);
+		} else if (gId == null) {
+			const user = await User.findAll({
+				attributes: ["id", "name", "email"],
+				where: { id: { [Op.ne]: req.user.id } },
+			});
+			res.status(200).json({ success: true, user });
+		}
 	} catch (err) {
 		console.log(err);
+	}
+};
+
+exports.addUserToGroup = async (req, res) => {
+	try {
+		const { groupId, email, isAdmin } = req.body;
+		const adminCheck = await UserGroup.findOne({
+			where: { userId: req.user.id, groupId: groupId },
+		});
+		if (adminCheck === false) {
+			return res.status(400).json({ message: "You are not an admin" });
+		}
+
+		const userToAdd = await User.findOne({ where: { email } });
+		const userGroup = await UserGroup.create({
+			userId: userToAdd.id,
+			groupId: groupId,
+		});
+
+		if (isAdmin === true) {
+			await UserGroup.update(
+				{ isAdmin: isAdmin },
+				{ where: { userId: userToAdd.id, groupId: groupId } }
+			);
+		}
+		res.status(201).json({ message: "added user to the group", userGroup });
+	} catch (err) {
+		console.log(err);
+		res.status(404).json({ message: "user already in group" });
 	}
 };
 
