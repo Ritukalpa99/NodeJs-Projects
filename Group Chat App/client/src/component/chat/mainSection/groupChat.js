@@ -10,9 +10,50 @@ const GroupChat = () => {
 	const groupId = localStorage.getItem("groupId");
 	const [file, setFile] = useState(null);
 	const socket = io("http://localhost:3333");
-
+ 
 
 	useEffect(() => {
+		let lastId = 0;
+		if (localMsg.length !== 0) {
+			lastId = localMsg[localMsg.length - 1].id;
+		}
+		console.log('inside normal useeffect');
+		const fetchMessages = async () => {
+			if (localStorage.getItem("groupId") != null) {
+				const res = await fetch(
+					`http://localhost:3001/get-message?id=${lastId}&gId=${groupId}`,
+					{
+						method: "GET",
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: localStorage.getItem("user"),
+						},
+					}
+				);
+				const data = await res.json();
+				if (res.ok) {
+					let retrievedMsg = localMsg.concat(data.chat);
+
+					if (retrievedMsg.length > 100) {
+						retrievedMsg = retrievedMsg.slice(
+							retrievedMsg.length - 100
+						);
+					}
+					localStorage.setItem(
+						"localMsg",
+						JSON.stringify(retrievedMsg)
+					);
+
+					setLocalMsg(retrievedMsg);
+				}
+			}
+		};
+		fetchMessages();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	},[])
+
+	useEffect(() => {
+		console.log('inside socket useffect');
 		let lastId = 0;
 		if (localMsg.length !== 0) {
 			lastId = localMsg[localMsg.length - 1].id;
@@ -47,7 +88,7 @@ const GroupChat = () => {
 				}
 			}
 		};
-		// fetchMessages();
+		fetchMessages();
 		socket.on('receive', fetchMessages);
 	}, [localMsg,socket,groupId]);
 
