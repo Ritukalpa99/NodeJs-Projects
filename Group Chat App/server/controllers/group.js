@@ -22,7 +22,7 @@ exports.makeAdmin = async (req, res) => {
 			where: { userId: req.user.id, groupId: gId },
 		});
 		if (adminCheck.dataValues.isAdmin === false) {
-			return res.status(400).json({ message: "You don't have the permission to become admin" });
+			return res.status(400).json({ message: "You don't have the permission to set admin" });
 		}
 		const user = await User.findOne({ where: { email: email } });
 		await UserGroup.update(

@@ -15,8 +15,8 @@ const Signup = () => {
 		try {
 			let url = "http://localhost:3001/user/login";
 			const formData = {
-				email: email,
-				password: password,
+				email,
+				password
 			};
 
 			if (!isLogin) {
