@@ -1,0 +1,14 @@
+.list-expenses {
+    background-color: #AAD7D9;
+    width: 30vw;
+    margin: 1em;
+    padding: 0.5em;
+    border-radius: 0.25em;
+}
+
+.list-delete-btn:hover{
+    cursor: pointer;
+    background-color: red;
+    color: white;
+    border-color:red;
+}
