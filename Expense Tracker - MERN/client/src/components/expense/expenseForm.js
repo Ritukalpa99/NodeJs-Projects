@@ -79,7 +79,7 @@ const ExpenseForm = () => {
 			if (response.ok) {
 				// throw new Error("not working");
 				setExpenses((prevExp) =>
-					prevExp.filter((exp) => exp.id !== id)
+					prevExp.filter((exp) => exp._id !== id)
 				);
 				navigate("/expenses");
 			}
@@ -312,7 +312,7 @@ const ExpenseForm = () => {
 								{ timeZone: "Asia/Kolkata" }
 							);
 							return (
-								<li id={report.id}>
+								<li id={report._id}>
 									<a href={report.fileUrl}>{date}</a>
 								</li>
 							);

@@ -5,49 +5,43 @@ const jwt = require('jsonwebtoken');
 const saltRounds = 10;
 
 const generateAccessToken = (id, isPremiumuser) => {
-    return jwt.sign({userId : id,isPremiumuser}, process.env.JWT_SECRET)
+    return jwt.sign({ userId: id, isPremiumuser }, process.env.JWT_SECRET);
 }
 
-exports.createUser = async (req,res) => {
+exports.createUser = async (req, res) => {
     try {
-        const {email, password, name} = req.body;
+        const { email, password, name } = req.body;
         const hashedPassword = await bcrypt.hash(password, saltRounds); 
         const user = await User.create({
             name,
             email,
-            password : hashedPassword
+            password: hashedPassword
         });
         res.json(user);
-    }
-    catch(err) {
-        res.status(500).json({error : err.message});
+    } catch(err) {
+        res.status(500).json({ error: err.message });
     } 
-    
 };
 
-exports.authenticateUser = async (req,res) => {
+exports.authenticateUser = async (req, res) => {
     try {
-        const {email, password} = req.body;
-        const userRes = await User.findAll({where : {email : email}});
-        // console.log(userRes);
-        if(userRes.length === 0) {
-            return res.status(404).json({success : false ,message : 'User not found'})
-        }
-        const user = userRes[0].dataValues;
-        const hashedPassword = user.password;
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
 
-        const passwordMatch = await bcrypt.compare(password, hashedPassword);
-        
-        if(!passwordMatch) {
-            return res.status(401).json({success :false, message : 'Unauthorized'});
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
         }
-        // res.json(userRes)
-        res.status(200).json({success : true, message : "User logged in successfully", token : generateAccessToken(user.id, user.isPremiumuser)})
-    }
-    catch(err) {
-        res.status(500).json({error :err.message})
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) {
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
+
+        res.status(200).json({ success: true, message: "User logged in successfully", token: generateAccessToken(user._id, user.isPremiumuser) });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 }
 
 exports.generateAccessToken = generateAccessToken;
-

@@ -25,13 +25,13 @@ const Expense = ({expenses,onHandleDelete}) => {
 					) : (
 						currentExpense.map((exp) => (
 							<div className="list-expenses">
-								<li key={exp.id}>
+								<li key={exp._id}>
 									Rs. {exp.amount} - {exp.description} -{" "}
 									{exp.category}
 								</li>
 								<button className="list-delete-btn"
 									onClick={() =>
-										handleDelete(exp.id, exp.amount)
+										handleDelete(exp._id, exp.amount)
 									}
 								>
 									Delete

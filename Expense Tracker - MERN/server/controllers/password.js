@@ -7,105 +7,104 @@ const User = require("../model/user");
 const Password = require("../model/password");
 
 exports.forgotPassword = async (req, res) => {
-	try {
-		const { email } = req.body;
-		// console.log(email);
-		const user = await User.findOne({ where: { email } });
-		if (user) {
-			const id = uuid.v4();
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
 
-			await user.createPassword({ id, active: true });
+        if (!user) {
+            throw new Error("User does not exist");
+        }
 
-			const transporter = nodemailer.createTransport({
-				service: "gmail",
-				host: "smtp.gmail.com",
-				port: 587,
-				secure: false,
-				auth: {
-					user: process.env.GMAIL_USER,
-					pass: process.env.GMAIL_PASSWORD,
-				},
-			});
+        const id = uuid.v4();
+        await Password.create({ active: true, user: user._id });
 
-			const mailOptions = {
-				from: {
-					name: "Ritukalpa",
-					address: process.env.GMAIL_USER,
-				},
-				to: ["ritukalpa.gogoi99@gmail.com"],
-				subject: "Reset Password",
-				html: `<a href="http://localhost:3001/password/reset-password/${id}">Click here to Reset Password</a>`,
-			};
-			await transporter.sendMail(mailOptions);
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false,
+            auth: {
+                user: process.env.GMAIL_USER,
+                pass: process.env.GMAIL_PASSWORD,
+            },
+        });
 
-			return res.status(200).json({
-				message: "Link to reset password sent successfully",
-				success: true,
-			});
-		} else {
-			throw new Error("User does not exist");
-		}
+        const mailOptions = {
+            from: {
+                name: "Ritukalpa",
+                address: process.env.GMAIL_USER,
+            },
+            to: ["ritukalpa.gogoi99@gmail.com"],
+            subject: "Reset Password",
+            html: `<a href="http://localhost:3001/password/reset-password/${id}">Click here to Reset Password</a>`,
+        };
 
-		// console.log(info);
-	} catch (err) {
-		console.log(err);
-		return res.status(500).json({ message: err.message, success: false });
-	}
+        await transporter.sendMail(mailOptions);
+
+        return res.status(200).json({
+            message: "Link to reset password sent successfully",
+            success: true,
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ message: err.message, success: false });
+    }
 };
 
 exports.resetPassword = async (req, res) => {
-	try {
-		const { id } = req.params;
-		const password = await Password.findOne({ where: { id } });
-		// console.log(id);
-		// console.log(password);
-		if (password) {
-			await password.update({ active: false });
+    try {
+        const { id } = req.params;
+        const password = await Password.findOne({ id });
 
-			res.status(200).send(`<html>
+        if (!password) {
+            throw new Error("Invalid reset password link");
+        }
+
+        await password.updateOne({ active: false });
+
+        res.status(200).send(`<html>
             <form action="/password/update-password/${id}" method="GET">
             <label for="newpassword">Enter new password</label>
             <input name="newpassword" type="password" required></input>
             <button>reset password</button>
             </form></html`);
-			res.end();
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(403).json({ error: err.message, success: false });
-	}
+    } catch (err) {
+        console.log(err);
+        res.status(403).json({ error: err.message, success: false });
+    }
 };
+
 exports.updatePassword = async (req, res) => {
-	// res.redirect('http://localhost:3000/login')
-	try {
-		const { newpassword } = req.query;
-		const { resetId } = req.params;
+    try {
+        const { newpassword } = req.query;
+        const { resetId } = req.params;
 
-		const resetPassword = await Password.findOne({
-			Where: { id: resetId },
-		});
+        const resetPassword = await Password.findOne({ id: resetId });
 
-		if (resetPassword) {
-			const user = await User.findOne({
-				where: { id: resetPassword.userId },
-			});
+        if (!resetPassword) {
+            return res.status(404).json({
+                error: "Reset password link expired or invalid",
+                success: false,
+            });
+        }
 
-			if (user) {
-				const saltRounds = 10;
-				const hash = await bcrypt.hash(newpassword, saltRounds);
+        const user = await User.findById(resetPassword.user);
 
-				await user.update({ password: hash });
+        if (!user) {
+            return res.status(404).json({
+                error: "User does not exist",
+                success: false,
+            });
+        }
 
-				res.redirect("http://localhost:3000/login");
-			} else {
-				res.status(404).json({
-					error: "No user exists",
-					success: false,
-				});
-			}
-		}
-	} catch (err) {
-		console.log(err);
-		res.status(403).json({ error: err.message, success: false });
-	}
+        const saltRounds = 10;
+        const hash = await bcrypt.hash(newpassword, saltRounds);
+        user.password = hash;
+        await user.save();
+
+        res.redirect("http://localhost:3000/login");
+    } catch (err) {
+        console.log(err);
+        res.status(403).json({ error: err.message, success: false });
+    }
 };
