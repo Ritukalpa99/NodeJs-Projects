@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const passwordSchema = new mongoose.Schema({
+    passwordId : String,
     active: Boolean,
     userId: {
         type: mongoose.Schema.Types.ObjectId,

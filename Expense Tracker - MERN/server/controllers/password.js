@@ -16,7 +16,7 @@ exports.forgotPassword = async (req, res) => {
         }
 
         const id = uuid.v4();
-        await Password.create({ active: true, user: user._id });
+        await Password.create({passwordId :id, active: true, userId: user._id });
 
         const transporter = nodemailer.createTransport({
             service: "gmail",
@@ -54,7 +54,7 @@ exports.forgotPassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
     try {
         const { id } = req.params;
-        const password = await Password.findOne({ id });
+        const password = await Password.findOne({ passwordId : id });
 
         if (!password) {
             throw new Error("Invalid reset password link");
@@ -79,7 +79,7 @@ exports.updatePassword = async (req, res) => {
         const { newpassword } = req.query;
         const { resetId } = req.params;
 
-        const resetPassword = await Password.findOne({ id: resetId });
+        const resetPassword = await Password.findOne({ passwordId: resetId });
 
         if (!resetPassword) {
             return res.status(404).json({
@@ -88,7 +88,7 @@ exports.updatePassword = async (req, res) => {
             });
         }
 
-        const user = await User.findById(resetPassword.user);
+        const user = await User.findById(resetPassword.userId);
 
         if (!user) {
             return res.status(404).json({
@@ -101,7 +101,6 @@ exports.updatePassword = async (req, res) => {
         const hash = await bcrypt.hash(newpassword, saltRounds);
         user.password = hash;
         await user.save();
-
         res.redirect("http://localhost:3000/login");
     } catch (err) {
         console.log(err);
