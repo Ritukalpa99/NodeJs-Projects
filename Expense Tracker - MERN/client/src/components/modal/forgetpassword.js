@@ -10,7 +10,6 @@ const ForgotPassword = ({ closeModal }) => {
 
 	const handleSubmut = async(e) => {
 		e.preventDefault();
-		// alert(email);
 		try {
 			const res = await fetch("http://localhost:3001/password/forgot-password",
 			{

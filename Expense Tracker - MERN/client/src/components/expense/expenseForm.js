@@ -89,9 +89,8 @@ const ExpenseForm = () => {
 	};
 
 	const handleAddExpense = async (e) => {
-		// alert(category)
 		try {
-			// const token = localStorage.getItem("user");
+			
 			const response = await fetch(
 				"http://localhost:3001/expenses/add-expense",
 				{
@@ -157,10 +156,9 @@ const ExpenseForm = () => {
 			}
 		);
 		const data = await response.json();
-		// console.log(data.orderId);
-		// alert(data.orderId, data.key_id);
+
 		if (data) {
-			// alert('its working')
+	
 			var options = {
 				key: data.key_id,
 				order_id: data.orderId,
@@ -180,7 +178,8 @@ const ExpenseForm = () => {
 						}
 					);
 					const tokenData = await callResponse.json();
-					// console.log(tokenData);
+					console.log("tokenData --->");
+					console.log(tokenData);
 					localStorage.setItem("user", tokenData.token);
 					alert("You are a Premium User");
 					setIsPremium(true);

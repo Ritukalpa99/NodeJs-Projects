@@ -12,6 +12,8 @@ const reportSchema = new mongoose.Schema({
     },
 });
 
+reportSchema.set('timestamps', true);
+
 const Report = mongoose.model('Report', reportSchema);
 
 module.exports = Report;

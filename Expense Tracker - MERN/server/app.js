@@ -8,8 +8,8 @@ connectDB();
 
 const userRoutes = require("./routes/user");
 const expenseRoutes = require('./routes/expense')
-// const premiumRoutes = require('./routes/premium');
-// const passwordRoutes = require('./routes/password');
+const premiumRoutes = require('./routes/premium');
+const passwordRoutes = require('./routes/password');
 
 const cors = require("cors");
 
@@ -24,8 +24,8 @@ app.use(cors());
 
 app.use("/user", userRoutes);
 app.use("/expenses", expenseRoutes);
-// app.use("/premium",premiumRoutes);
-// app.use("/password", passwordRoutes);
+app.use("/premium",premiumRoutes);
+app.use("/password", passwordRoutes);
 
 
 

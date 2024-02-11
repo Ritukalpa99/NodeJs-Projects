@@ -24,8 +24,8 @@ const Expense = ({expenses,onHandleDelete}) => {
 						<p>NO expenses</p>
 					) : (
 						currentExpense.map((exp) => (
-							<div className="list-expenses">
-								<li key={exp._id}>
+							<div key={exp._id} className="list-expenses">
+								<li >
 									Rs. {exp.amount} - {exp.description} -{" "}
 									{exp.category}
 								</li>
