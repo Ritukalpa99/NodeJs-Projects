@@ -16,6 +16,7 @@ exports.authenticate = async (req, res, next) => {
         }
 
         req.user = user;
+        // console.log(req.user);
         next();
     } catch (err) {
         res.status(401).json({ success: false, message: 'Error in authentication middleware' });

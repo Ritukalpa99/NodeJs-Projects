@@ -36,7 +36,8 @@ const ExpenseForm = () => {
 
 	useEffect(() => {
 		const token = localStorage.getItem("user");
-		const isPrem = parseJwt(token).isPremiumuser;
+		console.log(token);
+		const isPrem = parseJwt(token).isPremiumUser;
 
 		const fetchData = async () => {
 			try {
